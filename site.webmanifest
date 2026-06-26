@@ -1,0 +1,16 @@
+{
+  "name": "Pure Flow Pool & Spa",
+  "short_name": "Pure Flow",
+  "description": "Metro Vancouver pool and hot tub maintenance",
+  "start_url": "/en/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0D6E6E",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

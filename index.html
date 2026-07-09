@@ -1,13 +1,1527 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=/en/" />
-  <link rel="canonical" href="/en/" />
-  <title>Pure Flow Pool &amp; Spa</title>
-  <script>location.replace("/en/");</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildMatch - Action Packs for Vancouver Construction Workflows</title>
+<style>
+  :root {
+    --ink: #17212b;
+    --ink-soft: #344557;
+    --muted: #6f7f8f;
+    --line: #d9e0e7;
+    --panel: #ffffff;
+    --paper: #f5f7f9;
+    --wash: #eef4f6;
+    --blue: #2f6f9f;
+    --blue-dark: #214f72;
+    --green: #2f7a55;
+    --amber: #a86518;
+    --red: #a53b32;
+    --shadow: 0 18px 45px rgba(23, 33, 43, 0.10);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.55;
+  }
+
+  button, input, select, textarea { font: inherit; }
+
+  button { cursor: pointer; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+  }
+
+  .topbar-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    height: 60px;
+    padding: 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .brand {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 750;
+    letter-spacing: 0.01em;
+  }
+
+  .brand span { color: var(--blue); }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .nav a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 7px 10px;
+    border-radius: 6px;
+  }
+
+  .nav a:hover { background: var(--wash); }
+
+  .shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 34px 22px 56px;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .hero-copy {
+    padding: 34px 0 0;
+  }
+
+  .eyebrow {
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 760;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+
+  h1 {
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.02;
+    letter-spacing: 0;
+    margin: 0 0 18px;
+    max-width: 680px;
+  }
+
+  .hero-copy p {
+    margin: 0;
+    max-width: 590px;
+    color: var(--ink-soft);
+    font-size: 17px;
+  }
+
+  .proof-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .proof-chip {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 6px;
+    padding: 7px 10px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  .tool {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .tool-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    border-bottom: 1px solid var(--line);
+    background: #fbfcfd;
+  }
+
+  .tab {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 15px 12px;
+    font-size: 13px;
+    font-weight: 760;
+    border-right: 1px solid var(--line);
+  }
+
+  .tab:last-child { border-right: 0; }
+
+  .tab.active {
+    color: var(--blue-dark);
+    background: var(--panel);
+    box-shadow: inset 0 -3px 0 var(--blue);
+  }
+
+  .tool-body {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    min-height: 600px;
+  }
+
+  .input-pane,
+  .output-pane {
+    padding: 22px;
+  }
+
+  .input-pane {
+    border-right: 1px solid var(--line);
+    background: #fbfcfd;
+  }
+
+  .panel-title {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .panel-title h2,
+  .panel-title h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+
+  .panel-title p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .mini-badge {
+    flex: 0 0 auto;
+    color: var(--blue-dark);
+    background: var(--wash);
+    border: 1px solid #cfe1e8;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 750;
+  }
+
+  .form-grid {
+    display: grid;
+    gap: 13px;
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field label {
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 740;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--panel);
+    color: var(--ink);
+    padding: 10px 11px;
+    outline: none;
+  }
+
+  .field textarea {
+    min-height: 168px;
+    resize: vertical;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(47, 111, 159, 0.12);
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  .btn {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px 13px;
+    background: var(--panel);
+    color: var(--ink);
+    font-weight: 750;
+    font-size: 13px;
+  }
+
+  .btn.primary {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .btn.primary:hover { background: var(--blue-dark); }
+
+  .btn:hover { border-color: var(--blue); }
+
+  .btn.small {
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .output-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .output-pane { background: var(--panel); }
+
+  .output-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--panel);
+  }
+
+  .output-head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 15px;
+    border-bottom: 1px solid var(--line);
+    background: #fbfcfd;
+  }
+
+  .output-head h3 {
+    margin: 0;
+    font-size: 17px;
+  }
+
+  .output-head p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .status {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    padding: 5px 9px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--green);
+    background: #eaf5ef;
+    border: 1px solid #c6e5d4;
+  }
+
+  .pack-section {
+    padding: 15px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pack-section:last-child { border-bottom: 0; }
+
+  .pack-section h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .pack-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .pack-list li { margin: 5px 0; }
+
+  .metric-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .metric {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 9px;
+    background: var(--wash);
+  }
+
+  .metric strong {
+    display: block;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .metric span {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 9px;
+    background: #fbfcfd;
+  }
+
+  .fact strong {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 3px;
+  }
+
+  .fact span {
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .note {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 12px;
+  }
+
+  .capture-box,
+  .history-box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 14px;
+    background: #fbfcfd;
+  }
+
+  .capture-box h4,
+  .history-box h4 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .capture-box p,
+  .history-box p {
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .capture-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .capture-row input {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 9px 10px;
+    min-width: 0;
+  }
+
+  .history-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .history-item {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--panel);
+    padding: 9px;
+  }
+
+  .history-item strong {
+    display: block;
+    font-size: 12px;
+    color: var(--ink);
+  }
+
+  .history-item span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .history-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .utility-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .feedback-row {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 14px;
+    background: #fff;
+  }
+
+  .feedback-row h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+  }
+
+  .feedback-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .below {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .info-card {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 8px;
+    padding: 18px;
+  }
+
+  .info-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+  }
+
+  .info-card p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .footer {
+    border-top: 1px solid var(--line);
+    background: #fff;
+    padding: 22px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .footer-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .toast {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 40;
+    padding: 11px 13px;
+    border-radius: 7px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 960px) {
+    .hero,
+    .tool-body,
+    .below {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-copy { padding-top: 10px; }
+    .input-pane { border-right: 0; border-bottom: 1px solid var(--line); }
+    .nav { display: none; }
+  }
+
+  @media (max-width: 620px) {
+    .shell { padding: 24px 14px 42px; }
+    .topbar-inner { padding: 0 14px; }
+    .tool-tabs { grid-template-columns: 1fr; }
+    .tab { border-right: 0; border-bottom: 1px solid var(--line); }
+    .fact-grid { grid-template-columns: 1fr; }
+    .metric-row { grid-template-columns: 1fr; }
+    .capture-row { grid-template-columns: 1fr; }
+    .output-head { display: grid; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .topbar,
+    .hero-copy,
+    .input-pane,
+    .below,
+    .footer,
+    .capture-box,
+    .history-box,
+    .output-actions,
+    .toast {
+      display: none !important;
+    }
+
+    .shell { max-width: none; padding: 0; }
+    .hero,
+    .tool-body { display: block; }
+    .tool {
+      border: 0;
+      box-shadow: none;
+    }
+    .output-pane { padding: 0; }
+    .output-card { border: 0; border-radius: 0; }
+  }
+</style>
 </head>
 <body>
-  <p><a href="/en/">Continue to Pure Flow</a></p>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#">Build<span>Match</span></a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#tool">Generate pack</a>
+        <a href="#workflows">Workflows</a>
+        <a href="#trust">Boundaries</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero" id="tool">
+      <div class="hero-copy">
+        <p class="eyebrow">Vancouver workflow intelligence</p>
+        <h1>Paste the messy file. Get the clean pack.</h1>
+        <p>BuildMatch turns project notes, permit signals, and strata documents into structured action packs for contractors, property managers, developers, and real estate teams.</p>
+        <div class="proof-row" aria-label="Product proof points">
+          <span class="proof-chip">No marketplace needed</span>
+          <span class="proof-chip">No inspection claims</span>
+          <span class="proof-chip">Copy-ready outputs</span>
+          <span class="proof-chip">Built for async handoffs</span>
+        </div>
+      </div>
+
+      <section class="tool" aria-label="Action pack generator">
+        <div class="tool-tabs" role="tablist" aria-label="Action pack modes">
+          <button class="tab active" type="button" data-mode="quote">Quote Pack</button>
+          <button class="tab" type="button" data-mode="permit">Permit Intel</button>
+          <button class="tab" type="button" data-mode="strata">Strata Doc Pack</button>
+          <button class="tab" type="button" data-mode="compliance">Compliance</button>
+          <button class="tab" type="button" data-mode="rebate">Rebate Router</button>
+        </div>
+
+        <div class="tool-body">
+          <div class="input-pane">
+            <div class="panel-title">
+              <div>
+                <h2 id="inputTitle">Quote Pack Builder</h2>
+                <p id="inputHelp">Turn a messy request into a scope, missing-info list, and reply draft.</p>
+              </div>
+              <span class="mini-badge" id="modeBadge">QUOTE</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="role">Who is using this?</label>
+                <select id="role">
+                  <option>Contractor / estimator</option>
+                  <option>Property manager</option>
+                  <option>Developer / renovator</option>
+                  <option>Real estate agent</option>
+                  <option>Strata council</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="area">Area</label>
+                <select id="area">
+                  <option>Vancouver</option>
+                  <option>North Vancouver</option>
+                  <option>West Vancouver</option>
+                  <option>Burnaby</option>
+                  <option>Richmond</option>
+                  <option>Other Metro Vancouver</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="subject" id="subjectLabel">Project / building</label>
+                <input id="subject" type="text" value="1989 low-rise strata - window leak request" placeholder="Example: 1992 strata window leak">
+              </div>
+
+              <div class="field">
+                <label for="rawInput" id="rawLabel">Paste messy notes, email thread, or project request</label>
+                <textarea id="rawInput"></textarea>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary" type="button" id="generateBtn">Generate action pack</button>
+              <button class="btn" type="button" id="sampleBtn">Load sample</button>
+              <button class="btn" type="button" id="clearBtn">Clear</button>
+            </div>
+            <p class="note">Demo output is generated in the browser. It organizes inputs and flags missing information; it is not inspection, engineering, legal, permit, rebate, or compliance advice.</p>
+          </div>
+
+          <div class="output-pane">
+            <div class="panel-title">
+              <div>
+                <h3>Generated Pack</h3>
+                <p>Structured output you can copy into email, council notes, CRM, or a quote workflow.</p>
+              </div>
+              <div class="output-actions">
+                <button class="btn small" type="button" id="copyBtn">Copy</button>
+                <button class="btn small" type="button" id="downloadBtn">Download</button>
+                <button class="btn small" type="button" id="jsonBtn">JSON</button>
+                <button class="btn small" type="button" id="shareBtn">Share link</button>
+                <button class="btn small" type="button" id="printBtn">Print/PDF</button>
+              </div>
+            </div>
+
+            <article class="output-card" id="outputCard" aria-live="polite"></article>
+
+            <div class="feedback-row">
+              <h4>Would this be useful on a real file?</h4>
+              <div class="feedback-actions">
+                <button class="btn small" type="button" data-feedback="useful">Useful</button>
+                <button class="btn small" type="button" data-feedback="needs-work">Needs work</button>
+                <button class="btn small" type="button" data-feedback="would-pay">Would pay/export</button>
+              </div>
+            </div>
+
+            <div class="capture-box">
+              <h4>Save this pack after the value is shown</h4>
+              <p>Local demo save only. This is the next paid/export capture point, not a lead form before value.</p>
+              <div class="capture-row">
+                <input id="emailInput" type="email" placeholder="you@company.com">
+                <button class="btn primary" type="button" id="saveLeadBtn">Save pack</button>
+              </div>
+            </div>
+
+            <div class="history-box">
+              <div class="utility-row">
+                <div>
+                  <h4>Recent saved packs</h4>
+                  <p>Stored in this browser so repeat workflow behavior can be tested without a backend.</p>
+                </div>
+                <div class="output-actions">
+                  <button class="btn small" type="button" id="historyCsvBtn">CSV</button>
+                  <button class="btn small" type="button" id="clearHistoryBtn">Clear</button>
+                </div>
+              </div>
+              <div class="history-list" id="historyList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="below" id="workflows">
+      <article class="info-card">
+        <h3>Quote Pack</h3>
+        <p>Compress notes, photos, and email threads into a scope summary, missing questions, quote-readiness checklist, and reply draft.</p>
+      </article>
+      <article class="info-card">
+        <h3>Permit Intel</h3>
+        <p>Turn permit signals into contractor/developer context cards with trade relevance, suggested next action, and CRM-ready notes.</p>
+      </article>
+      <article class="info-card">
+        <h3>Strata Doc Pack</h3>
+        <p>Extract dates, cost mentions, repair references, missing documents, and buyer/council questions from strata document text.</p>
+      </article>
+      <article class="info-card">
+        <h3>Compliance Pack</h3>
+        <p>Turn contractor documents and pre-1990 renovation context into missing-doc, WorkSafeBC, insurance, and asbestos-routing checklists.</p>
+      </article>
+      <article class="info-card">
+        <h3>Rebate Router</h3>
+        <p>Convert upgrade notes into possible rebate paths, document requirements, customer handoff notes, and confirmation flags.</p>
+      </article>
+    </section>
+
+    <section class="below" id="trust">
+      <article class="info-card">
+        <h3>Designed around existing work</h3>
+        <p>Starts with paste/manual input so contractors, PMs, and agents do not need to adopt another portal before seeing value.</p>
+      </article>
+      <article class="info-card">
+        <h3>Clear boundaries</h3>
+        <p>BuildMatch organizes, extracts, compares, and routes. It does not inspect, certify, broker, approve, or guarantee outcomes.</p>
+      </article>
+      <article class="info-card">
+        <h3>Next monetization test</h3>
+        <p>Free preview first. Paid export, saved pack, share link, or recurring permit digest only after the user sees useful output.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>BuildMatch - action-pack engine for Vancouver construction and real-estate workflows.</span>
+      <span>Not inspection, engineering, legal, brokerage, permit, rebate, or compliance advice.</span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">Copied</div>
+
+<script>
+  const modes = {
+    quote: {
+      title: "Quote Pack Builder",
+      help: "Turn a messy request into a scope, missing-info list, and reply draft.",
+      badge: "QUOTE",
+      subjectLabel: "Project / building",
+      rawLabel: "Paste messy notes, email thread, or project request",
+      subject: "1989 low-rise strata - window leak request",
+      sample: "PM email: Council wants pricing for recurring leaks around 12 window openings on north elevation. Building is around 1989, 42 units, wood-frame low rise in North Vancouver. Photos show staining below two bedroom windows. No confirmed access plan yet. Council meeting in 3 weeks. They asked for rough pricing but did not provide unit count affected, previous remediation history, or warranty expectations."
+    },
+    permit: {
+      title: "Permit Intel Generator",
+      help: "Turn a permit signal into a contractor/developer context card.",
+      badge: "PERMIT",
+      subjectLabel: "Permit signal / address",
+      rawLabel: "Paste permit details, public record notes, or project context",
+      subject: "Issued alteration permit - Kitsilano residential project",
+      sample: "Issued building permit. Area: Kitsilano. Category: residential alteration / repair / addition. Project value: 185000. Scope notes mention exterior alterations, window changes, and interior renovation. Applicant appears to be a local builder. Nearby trades may need envelope, window, siding, insulation, and finishing coordination."
+    },
+    strata: {
+      title: "Strata Doc Pack Reader",
+      help: "Extract issues, dates, costs, and missing questions from strata document text.",
+      badge: "STRATA",
+      subjectLabel: "Building / listing / strata file",
+      rawLabel: "Paste Form B, minutes, depreciation report excerpt, or insurance notes",
+      subject: "Older Burnaby condo - depreciation report excerpt",
+      sample: "Depreciation report excerpt: Windows and exterior doors have estimated remaining life of 3-5 years. Balcony membrane repairs noted for 2027 planning cycle. Council minutes mention water ingress complaints in units 204 and 306. Insurance deductible for water damage increased at renewal. No current special levy approved. Reserve fund discussion deferred to next AGM. Buyer asks whether exterior work is already quoted."
+    },
+    compliance: {
+      title: "Contractor Compliance Pack",
+      help: "Build a reusable bid packet and job-specific compliance checklist.",
+      badge: "COMPLY",
+      subjectLabel: "Contractor / job file",
+      rawLabel: "Paste contractor docs, job notes, building age, or bid requirements",
+      subject: "Pre-1990 bathroom and window renovation - contractor packet",
+      sample: "Contractor profile: Metro Van Renovations. General liability insurance certificate expires Nov 2026. WorkSafeBC account active, clearance letter not attached. Three references available but not formatted. Job notes: 1978 Vancouver townhouse, bathroom demo, window replacement, possible drywall joint compound and vinyl flooring affected. Client wants bid next week and asks what documents prove the contractor is qualified."
+    },
+    rebate: {
+      title: "BC Upgrade Rebate Router",
+      help: "Turn upgrade notes into possible rebate paths and customer document checklists.",
+      badge: "REBATE",
+      subjectLabel: "Upgrade / customer file",
+      rawLabel: "Paste upgrade notes, property type, current system, and planned equipment",
+      subject: "North Vancouver townhouse - windows, insulation, heat pump",
+      sample: "Customer owns a North Vancouver townhouse. Current system is electric baseboards. Planned upgrades include cold-climate heat pump, attic insulation, and several old window replacements. Customer asks whether rebates may apply and what documents they should prepare before signing. Contractor has photos but not model numbers or invoices yet."
+    }
+  };
+
+  const state = { mode: "quote", currentPack: null };
+
+  const els = {
+    tabs: document.querySelectorAll(".tab"),
+    role: document.getElementById("role"),
+    area: document.getElementById("area"),
+    subject: document.getElementById("subject"),
+    rawInput: document.getElementById("rawInput"),
+    inputTitle: document.getElementById("inputTitle"),
+    inputHelp: document.getElementById("inputHelp"),
+    modeBadge: document.getElementById("modeBadge"),
+    subjectLabel: document.getElementById("subjectLabel"),
+    rawLabel: document.getElementById("rawLabel"),
+    outputCard: document.getElementById("outputCard"),
+    generateBtn: document.getElementById("generateBtn"),
+    sampleBtn: document.getElementById("sampleBtn"),
+    clearBtn: document.getElementById("clearBtn"),
+    copyBtn: document.getElementById("copyBtn"),
+    downloadBtn: document.getElementById("downloadBtn"),
+    jsonBtn: document.getElementById("jsonBtn"),
+    shareBtn: document.getElementById("shareBtn"),
+    printBtn: document.getElementById("printBtn"),
+    saveLeadBtn: document.getElementById("saveLeadBtn"),
+    emailInput: document.getElementById("emailInput"),
+    historyList: document.getElementById("historyList"),
+    historyCsvBtn: document.getElementById("historyCsvBtn"),
+    clearHistoryBtn: document.getElementById("clearHistoryBtn"),
+    toast: document.getElementById("toast")
+  };
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function includesAny(text, terms) {
+    const lower = text.toLowerCase();
+    return terms.some(term => lower.includes(term));
+  }
+
+  function moneyMentions(text) {
+    return text.match(/\$?\b\d{2,3}(?:,\d{3})+\b|\$\d+k\b|\b\d+k\b/gi) || [];
+  }
+
+  function dateMentions(text) {
+    return text.match(/\b(?:19|20)\d{2}\b|\b\d+\s*(?:day|days|week|weeks|month|months|year|years)\b/gi) || [];
+  }
+
+  function splitSentences(text) {
+    return text
+      .replace(/\s+/g, " ")
+      .split(/(?<=[.!?])\s+|\n+/)
+      .map(item => item.trim())
+      .filter(Boolean)
+      .slice(0, 4);
+  }
+
+  function list(items) {
+    return `<ul class="pack-list">${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+  }
+
+  function countItems(pack, headingIncludes) {
+    const section = pack.sections.find(item => item.heading.toLowerCase().includes(headingIncludes));
+    return section ? section.items.length : 0;
+  }
+
+  function factGrid(facts) {
+    return `<div class="fact-grid">${facts.map(fact => `
+      <div class="fact"><strong>${escapeHtml(fact.label)}</strong><span>${escapeHtml(fact.value)}</span></div>
+    `).join("")}</div>`;
+  }
+
+  function findMissing(text, fields) {
+    return fields.filter(field => !includesAny(text, field.terms)).map(field => field.label);
+  }
+
+  function generateQuotePack(input) {
+    const text = `${input.subject} ${input.raw}`.trim();
+    const missing = findMissing(text, [
+      { label: "Confirm decision maker and approval path", terms: ["council", "owner", "pm", "manager", "decision", "approval"] },
+      { label: "Confirm affected quantity or unit count", terms: ["unit", "units", "openings", "windows", "doors", "sq ft", "linear"] },
+      { label: "Confirm site access and visit timing", terms: ["access", "site visit", "visit", "schedule"] },
+      { label: "Confirm previous repair or warranty history", terms: ["previous", "past", "warranty", "remediation", "repair history"] },
+      { label: "Confirm quote deadline or meeting date", terms: ["deadline", "meeting", "weeks", "days", "date"] }
+    ]);
+    const flags = [];
+    if (includesAny(text, ["1989", "1988", "1987", "1990", "pre-1990", "asbestos"])) flags.push("Pre-1990 building language appears. Add asbestos/compliance confirmation before invasive work.");
+    if (includesAny(text, ["leak", "water", "staining", "ingress", "moisture"])) flags.push("Water/leak language appears. Ask for photos, affected locations, and any emergency mitigation history.");
+    if (includesAny(text, ["strata", "council", "pm"])) flags.push("Strata/PM workflow appears. Use council-ready same-scope quote format.");
+    if (!flags.length) flags.push("No major compliance or urgency flags found from the provided text.");
+
+    return {
+      title: "Quote-Ready Action Pack",
+      subtitle: `${input.area} - ${input.role}`,
+      status: missing.length <= 2 ? "Ready draft" : "Needs info",
+      facts: [
+        { label: "Subject", value: input.subject || "Untitled request" },
+        { label: "Detected intent", value: includesAny(text, ["quote", "pricing", "price"]) ? "Pricing / quote request" : "Scope clarification" },
+        { label: "Urgency signal", value: includesAny(text, ["urgent", "leak", "emergency"]) ? "Time-sensitive" : "Routine / unclear" },
+        { label: "Pack use", value: "Estimator reply + same-scope request" }
+      ],
+      sections: [
+        { heading: "Clean project summary", items: splitSentences(input.raw).length ? splitSentences(input.raw) : ["No detailed notes provided yet. Add scope, photos, location, timeline, and decision path."] },
+        { heading: "Missing before a clean quote", items: missing.length ? missing : ["Core quote fields are mostly present. Confirm assumptions before sending final pricing."] },
+        { heading: "Flags to route", items: flags },
+        { heading: "Copy-ready reply", items: ["Thanks for the notes. Before pricing this cleanly, please confirm the missing items above so all contractors quote the same scope and assumptions."] }
+      ]
+    };
+  }
+
+  function generatePermitPack(input) {
+    const text = `${input.subject} ${input.raw}`.trim();
+    const projectValue = moneyMentions(text)[0] || "Not provided";
+    const tradeSignals = [];
+    if (includesAny(text, ["window", "door", "exterior", "envelope"])) tradeSignals.push("Envelope / window trade signal");
+    if (includesAny(text, ["insulation", "heat", "ventilation", "energy"])) tradeSignals.push("Energy upgrade trade signal");
+    if (includesAny(text, ["alteration", "repair", "addition", "renovation"])) tradeSignals.push("Renovation / alteration signal");
+    if (includesAny(text, ["commercial", "tenant"])) tradeSignals.push("Commercial improvement signal");
+    if (!tradeSignals.length) tradeSignals.push("General permit watch signal");
+
+    return {
+      title: "Permit Intelligence Card",
+      subtitle: `${input.area} - ${input.role}`,
+      status: "Watch signal",
+      facts: [
+        { label: "Permit / project", value: input.subject || "Permit signal" },
+        { label: "Project value", value: projectValue },
+        { label: "Trade relevance", value: tradeSignals[0] },
+        { label: "Suggested action", value: includesAny(text, ["issued", "approved"]) ? "Research / qualify" : "Watch" }
+      ],
+      sections: [
+        { heading: "Why this may matter", items: tradeSignals },
+        { heading: "Qualification questions", items: [
+          "Who is the applicant or builder connected to this permit?",
+          "Is this inside your service area and project-size range?",
+          "Does the scope imply adjacent trades you can support?",
+          "Is there a respectful non-spam reason to follow up?"
+        ] },
+        { heading: "CRM-ready note", items: [
+          `${input.subject || "Permit signal"} in ${input.area}. Review for trade relevance, project value, applicant context, and potential adjacent work.`
+        ] },
+        { heading: "Compliance note", items: ["Use as intelligence and task creation. Avoid uncontrolled cold-email automation; keep consent and outreach rules in mind."] }
+      ]
+    };
+  }
+
+  function generateStrataPack(input) {
+    const text = `${input.subject} ${input.raw}`.trim();
+    const dates = dateMentions(text);
+    const amounts = moneyMentions(text);
+    const issues = [];
+    if (includesAny(text, ["window", "door"])) issues.push("Windows / doors mentioned");
+    if (includesAny(text, ["balcony", "membrane"])) issues.push("Balcony / membrane mentioned");
+    if (includesAny(text, ["roof"])) issues.push("Roof mentioned");
+    if (includesAny(text, ["water", "ingress", "leak", "deductible"])) issues.push("Water damage / insurance language mentioned");
+    if (includesAny(text, ["levy", "reserve", "crf", "contingency"])) issues.push("Funding / reserve / levy language mentioned");
+    if (!issues.length) issues.push("No major repair terms detected from the pasted text.");
+
+    const missing = findMissing(text, [
+      { label: "Current Form B", terms: ["form b"] },
+      { label: "Recent council minutes", terms: ["minutes", "council"] },
+      { label: "Depreciation report date", terms: ["depreciation", "report"] },
+      { label: "Insurance deductible details", terms: ["insurance", "deductible"] },
+      { label: "Special levy status", terms: ["levy", "special levy"] }
+    ]);
+
+    return {
+      title: "Strata Document Action Pack",
+      subtitle: `${input.area} - ${input.role}`,
+      status: "Doc summary",
+      facts: [
+        { label: "File", value: input.subject || "Strata file" },
+        { label: "Dates found", value: dates.length ? dates.slice(0, 3).join(", ") : "None detected" },
+        { label: "Amounts found", value: amounts.length ? amounts.slice(0, 3).join(", ") : "None detected" },
+        { label: "Pack use", value: "Questions + missing docs" }
+      ],
+      sections: [
+        { heading: "Issues found in pasted text", items: issues },
+        { heading: "Missing or confirm before relying on file", items: missing.length ? missing : ["Core strata document categories appear referenced. Confirm versions and dates."] },
+        { heading: "Questions to ask PM / strata / seller", items: [
+          "Are any exterior or water-related repairs already quoted or approved?",
+          "Are any special levies, loans, or reserve transfers being discussed?",
+          "What is the latest insurance deductible for water damage?",
+          "Were the mentioned repairs completed, deferred, or still under review?"
+        ] },
+        { heading: "Boundary", items: ["This is document organization and question preparation, not inspection, legal advice, or valuation advice."] }
+      ]
+    };
+  }
+
+  function generateCompliancePack(input) {
+    const text = `${input.subject} ${input.raw}`.trim();
+    const docsMissing = findMissing(text, [
+      { label: "Current liability insurance certificate", terms: ["insurance", "liability", "certificate"] },
+      { label: "WorkSafeBC account or clearance confirmation", terms: ["worksafebc", "work safe", "clearance"] },
+      { label: "References formatted for bid attachment", terms: ["reference", "references"] },
+      { label: "Warranty or workmanship terms", terms: ["warranty", "workmanship"] },
+      { label: "Trade license or certification details", terms: ["license", "licensed", "certification", "certificate"] }
+    ]);
+    const flags = [];
+    if (includesAny(text, ["197", "198", "pre-1990", "before 1990", "asbestos", "drywall", "vinyl", "flooring", "demo"])) {
+      flags.push("Pre-1990 or demolition/material language appears. Confirm asbestos survey and qualified abatement path before invasive work.");
+    }
+    if (includesAny(text, ["expires", "expiry", "expired"])) flags.push("Document expiry language appears. Confirm dates before attaching to bid.");
+    if (includesAny(text, ["clearance letter not attached", "not attached", "missing"])) flags.push("Missing attachment language appears. Create document request before sending final bid packet.");
+    if (!flags.length) flags.push("No urgent compliance flags detected from the pasted text. Still confirm documents before bid export.");
+
+    return {
+      title: "Contractor Compliance Action Pack",
+      subtitle: `${input.area} - ${input.role}`,
+      status: docsMissing.length <= 2 ? "Packet draft" : "Docs missing",
+      facts: [
+        { label: "File", value: input.subject || "Contractor compliance file" },
+        { label: "Pre-1990 signal", value: includesAny(text, ["197", "198", "pre-1990", "before 1990"]) ? "Detected" : "Not detected" },
+        { label: "Document readiness", value: docsMissing.length <= 2 ? "Mostly ready" : "Needs follow-up" },
+        { label: "Pack use", value: "Bid trust packet + job checklist" }
+      ],
+      sections: [
+        { heading: "Missing documents before bid packet", items: docsMissing.length ? docsMissing : ["Core contractor packet documents are mentioned. Confirm file versions and expiry dates."] },
+        { heading: "Compliance flags", items: flags },
+        { heading: "Client-facing trust summary", items: [
+          "Contractor packet should include insurance, WorkSafeBC confirmation, references, warranty terms, and job-specific compliance notes.",
+          "For pre-1990 or demolition work, confirm hazardous material requirements before final scope and pricing."
+        ] },
+        { heading: "Next actions", items: [
+          "Request missing attachments from contractor admin.",
+          "Confirm job-specific asbestos/material path before invasive work.",
+          "Export a client-facing packet only after expiry dates and attachments are verified."
+        ] }
+      ]
+    };
+  }
+
+  function generateRebatePack(input) {
+    const text = `${input.subject} ${input.raw}`.trim();
+    const paths = [];
+    if (includesAny(text, ["heat pump", "baseboard", "heating", "cooling"])) paths.push("Heat pump / heating upgrade rebate path may be relevant.");
+    if (includesAny(text, ["insulation", "attic", "wall", "crawlspace"])) paths.push("Insulation upgrade rebate path may be relevant.");
+    if (includesAny(text, ["window", "door", "glazing"])) paths.push("Window/door upgrade documentation path may be relevant.");
+    if (includesAny(text, ["townhouse", "strata", "multi-unit", "condo"])) paths.push("Multi-unit or strata rules may require extra confirmation.");
+    if (!paths.length) paths.push("No obvious rebate category detected. Add upgrade type, current system, and property type.");
+
+    const missing = findMissing(text, [
+      { label: "Property type and ownership/strata status", terms: ["townhouse", "single family", "condo", "strata", "owner"] },
+      { label: "Current system or existing condition", terms: ["current", "existing", "baseboard", "furnace", "boiler"] },
+      { label: "Planned equipment or product details", terms: ["model", "equipment", "heat pump", "window", "insulation"] },
+      { label: "Photos or pre-upgrade documentation", terms: ["photo", "photos", "before"] },
+      { label: "Invoice/quote readiness", terms: ["invoice", "quote", "estimate", "signing"] }
+    ]);
+
+    return {
+      title: "Rebate Routing Action Pack",
+      subtitle: `${input.area} - ${input.role}`,
+      status: missing.length <= 2 ? "Route draft" : "Needs confirmation",
+      facts: [
+        { label: "Upgrade file", value: input.subject || "Upgrade file" },
+        { label: "Detected paths", value: String(paths.length) },
+        { label: "Missing fields", value: String(missing.length) },
+        { label: "Pack use", value: "Customer handoff + document checklist" }
+      ],
+      sections: [
+        { heading: "Possible rebate paths to confirm", items: paths },
+        { heading: "Missing before rebate handoff", items: missing.length ? missing : ["Core rebate routing details are present. Confirm current program status before promising eligibility."] },
+        { heading: "Customer-facing checklist", items: [
+          "Keep pre-upgrade photos and existing-system details.",
+          "Do not assume approval until program eligibility and equipment requirements are confirmed.",
+          "Collect quotes, invoices, model numbers, and contractor documentation in one folder."
+        ] },
+        { heading: "Boundary", items: ["This routes possible rebate paths and documents. It does not guarantee eligibility, approval, incentive amount, or program availability."] }
+      ]
+    };
+  }
+
+  function renderPack(pack) {
+    const missingCount = countItems(pack, "missing");
+    const flagCount = countItems(pack, "flag") || countItems(pack, "issues") || countItems(pack, "possible") || countItems(pack, "compliance");
+    const outputCount = pack.sections.reduce((sum, section) => sum + section.items.length, 0);
+    els.outputCard.innerHTML = `
+      <div class="output-head">
+        <div>
+          <h3>${escapeHtml(pack.title)}</h3>
+          <p>${escapeHtml(pack.subtitle)}</p>
+        </div>
+        <span class="status">${escapeHtml(pack.status)}</span>
+      </div>
+      <div class="pack-section">
+        <h4>Extracted facts</h4>
+        ${factGrid(pack.facts)}
+        <div class="metric-row">
+          <div class="metric"><strong>${missingCount}</strong><span>Missing items</span></div>
+          <div class="metric"><strong>${flagCount}</strong><span>Flags/issues</span></div>
+          <div class="metric"><strong>${outputCount}</strong><span>Output lines</span></div>
+        </div>
+      </div>
+      ${pack.sections.map(section => `
+        <div class="pack-section">
+          <h4>${escapeHtml(section.heading)}</h4>
+          ${list(section.items)}
+        </div>
+      `).join("")}
+    `;
+  }
+
+  function packToText() {
+    const lines = [];
+    const title = els.outputCard.querySelector(".output-head h3");
+    const subtitle = els.outputCard.querySelector(".output-head p");
+    if (title) lines.push(title.textContent);
+    if (subtitle) lines.push(subtitle.textContent);
+    lines.push(`Generated: ${new Date().toLocaleString()}`);
+    els.outputCard.querySelectorAll(".pack-section").forEach(section => {
+      const heading = section.querySelector("h4");
+      if (heading) lines.push("", heading.textContent);
+      section.querySelectorAll(".fact").forEach(fact => {
+        const label = fact.querySelector("strong")?.textContent || "";
+        const value = fact.querySelector("span")?.textContent || "";
+        lines.push(`- ${label}: ${value}`);
+      });
+      section.querySelectorAll(".metric").forEach(metric => {
+        const value = metric.querySelector("strong")?.textContent || "";
+        const label = metric.querySelector("span")?.textContent || "";
+        lines.push(`- ${label}: ${value}`);
+      });
+      section.querySelectorAll("li").forEach(item => lines.push(`- ${item.textContent}`));
+    });
+    lines.push("", "Boundary: Document/workflow support only. Not inspection, engineering, legal, brokerage, permit, rebate, or compliance advice.");
+    return lines.join("\n");
+  }
+
+  function generate() {
+    const input = {
+      role: els.role.value,
+      area: els.area.value,
+      subject: els.subject.value.trim(),
+      raw: els.rawInput.value.trim()
+    };
+    const generators = {
+      quote: generateQuotePack,
+      permit: generatePermitPack,
+      strata: generateStrataPack,
+      compliance: generateCompliancePack,
+      rebate: generateRebatePack
+    };
+    const pack = (generators[state.mode] || generateQuotePack)(input);
+    state.currentPack = {
+      ...pack,
+      id: globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : String(Date.now()),
+      mode: state.mode,
+      subject: input.subject,
+      raw: input.raw,
+      area: input.area,
+      role: input.role,
+      generatedAt: new Date().toISOString()
+    };
+    renderPack(pack);
+  }
+
+  function slug(value) {
+    return String(value || "buildmatch-pack")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 54) || "buildmatch-pack";
+  }
+
+  function downloadTextFile() {
+    const text = packToText();
+    const filename = `${slug(state.currentPack?.title)}-${new Date().toISOString().slice(0, 10)}.txt`;
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showToast("Pack downloaded");
+  }
+
+  function downloadJsonFile() {
+    const payload = {
+      pack: state.currentPack,
+      text: packToText(),
+      boundary: "Document/workflow support only. Not inspection, engineering, legal, brokerage, permit, rebate, or compliance advice."
+    };
+    const filename = `${slug(state.currentPack?.title)}-${new Date().toISOString().slice(0, 10)}.json`;
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showToast("JSON downloaded");
+  }
+
+  function encodeState() {
+    const payload = {
+      mode: state.mode,
+      role: els.role.value,
+      area: els.area.value,
+      subject: els.subject.value,
+      raw: els.rawInput.value
+    };
+    return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  }
+
+  function decodeState(value) {
+    return JSON.parse(decodeURIComponent(escape(atob(value))));
+  }
+
+  async function copyShareLink() {
+    const url = `${location.origin}${location.pathname}#pack=${encodeState()}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast("Share link copied");
+    } catch (error) {
+      location.hash = `pack=${encodeState()}`;
+      showToast("Share link added to URL");
+    }
+  }
+
+  function getSavedPacks() {
+    try {
+      return JSON.parse(localStorage.getItem("buildmatchSavedPacks") || "[]");
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function setSavedPacks(packs) {
+    localStorage.setItem("buildmatchSavedPacks", JSON.stringify(packs.slice(0, 6)));
+  }
+
+  function getFeedbackEvents() {
+    try {
+      return JSON.parse(localStorage.getItem("buildmatchFeedbackEvents") || "[]");
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function setFeedbackEvents(events) {
+    localStorage.setItem("buildmatchFeedbackEvents", JSON.stringify(events.slice(0, 30)));
+  }
+
+  function renderHistory() {
+    const packs = getSavedPacks();
+    if (!packs.length) {
+      els.historyList.innerHTML = `<div class="history-item"><strong>No saved packs yet</strong><span>Generate output, then save it with an email.</span></div>`;
+      return;
+    }
+    els.historyList.innerHTML = packs.map(pack => `
+      <div class="history-item" data-pack-id="${escapeHtml(pack.id)}">
+        <strong>${escapeHtml(pack.title)}</strong>
+        <span>${escapeHtml(pack.mode.toUpperCase())} - ${escapeHtml(pack.email)} - ${new Date(pack.savedAt).toLocaleString()}</span>
+        <div class="history-actions">
+          <button class="btn small" type="button" data-history-action="restore" data-pack-id="${escapeHtml(pack.id)}">Restore</button>
+          <button class="btn small" type="button" data-history-action="delete" data-pack-id="${escapeHtml(pack.id)}">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function savePackLead() {
+    const email = els.emailInput.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast("Enter a valid email");
+      return;
+    }
+    const packs = getSavedPacks();
+    packs.unshift({
+      id: globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : String(Date.now()),
+      title: state.currentPack?.title || "BuildMatch pack",
+      subject: state.currentPack?.subject || "",
+      raw: state.currentPack?.raw || "",
+      area: state.currentPack?.area || els.area.value,
+      role: state.currentPack?.role || els.role.value,
+      mode: state.mode,
+      email,
+      savedAt: new Date().toISOString(),
+      preview: packToText().slice(0, 600)
+    });
+    setSavedPacks(packs);
+    renderHistory();
+    showToast("Pack saved locally");
+  }
+
+  function restoreSavedPack(id) {
+    const pack = getSavedPacks().find(item => item.id === id);
+    if (!pack) return;
+    setMode(pack.mode);
+    els.role.value = pack.role || els.role.value;
+    els.area.value = pack.area || els.area.value;
+    els.subject.value = pack.subject || "";
+    els.rawInput.value = pack.raw || "";
+    generate();
+    showToast("Pack restored");
+  }
+
+  function deleteSavedPack(id) {
+    setSavedPacks(getSavedPacks().filter(item => item.id !== id));
+    renderHistory();
+    showToast("Saved pack deleted");
+  }
+
+  function exportHistoryCsv() {
+    const packs = getSavedPacks();
+    if (!packs.length) {
+      showToast("No history to export");
+      return;
+    }
+    const rows = [["saved_at", "mode", "email", "title", "subject"]];
+    packs.forEach(pack => rows.push([pack.savedAt, pack.mode, pack.email, pack.title, pack.subject]));
+    const csv = rows.map(row => row.map(value => `"${String(value || "").replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `buildmatch-saved-packs-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showToast("History CSV downloaded");
+  }
+
+  function clearHistory() {
+    localStorage.removeItem("buildmatchSavedPacks");
+    renderHistory();
+    showToast("History cleared");
+  }
+
+  function saveFeedback(value) {
+    const events = getFeedbackEvents();
+    events.unshift({
+      id: globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : String(Date.now()),
+      value,
+      mode: state.mode,
+      subject: state.currentPack?.subject || "",
+      at: new Date().toISOString()
+    });
+    setFeedbackEvents(events);
+    showToast(value === "would-pay" ? "Signal saved: would pay" : "Feedback saved");
+  }
+
+  function loadSharedState() {
+    if (!location.hash.startsWith("#pack=")) return false;
+    try {
+      const payload = decodeState(location.hash.replace("#pack=", ""));
+      if (!modes[payload.mode]) return false;
+      setMode(payload.mode);
+      els.role.value = payload.role || els.role.value;
+      els.area.value = payload.area || els.area.value;
+      els.subject.value = payload.subject || "";
+      els.rawInput.value = payload.raw || "";
+      generate();
+      showToast("Shared pack loaded");
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function setMode(mode) {
+    state.mode = mode;
+    const config = modes[mode];
+    els.tabs.forEach(tab => tab.classList.toggle("active", tab.dataset.mode === mode));
+    els.inputTitle.textContent = config.title;
+    els.inputHelp.textContent = config.help;
+    els.modeBadge.textContent = config.badge;
+    els.subjectLabel.textContent = config.subjectLabel;
+    els.rawLabel.textContent = config.rawLabel;
+    els.subject.value = config.subject;
+    els.rawInput.value = config.sample;
+    generate();
+  }
+
+  function showToast(message) {
+    els.toast.textContent = message;
+    els.toast.classList.add("show");
+    window.setTimeout(() => els.toast.classList.remove("show"), 1600);
+  }
+
+  els.tabs.forEach(tab => {
+    tab.addEventListener("click", () => setMode(tab.dataset.mode));
+  });
+
+  els.generateBtn.addEventListener("click", generate);
+
+  els.sampleBtn.addEventListener("click", () => {
+    const config = modes[state.mode];
+    els.subject.value = config.subject;
+    els.rawInput.value = config.sample;
+    generate();
+  });
+
+  els.clearBtn.addEventListener("click", () => {
+    els.subject.value = "";
+    els.rawInput.value = "";
+    generate();
+  });
+
+  els.copyBtn.addEventListener("click", async () => {
+    const text = packToText();
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Pack copied");
+    } catch (error) {
+      showToast("Copy unavailable");
+    }
+  });
+
+  els.downloadBtn.addEventListener("click", downloadTextFile);
+  els.jsonBtn.addEventListener("click", downloadJsonFile);
+  els.shareBtn.addEventListener("click", copyShareLink);
+  els.printBtn.addEventListener("click", () => window.print());
+  els.saveLeadBtn.addEventListener("click", savePackLead);
+  els.historyCsvBtn.addEventListener("click", exportHistoryCsv);
+  els.clearHistoryBtn.addEventListener("click", clearHistory);
+  els.historyList.addEventListener("click", event => {
+    const button = event.target.closest("button[data-history-action]");
+    if (!button) return;
+    const id = button.dataset.packId;
+    if (button.dataset.historyAction === "restore") restoreSavedPack(id);
+    if (button.dataset.historyAction === "delete") deleteSavedPack(id);
+  });
+
+  document.querySelectorAll("[data-feedback]").forEach(button => {
+    button.addEventListener("click", () => saveFeedback(button.dataset.feedback));
+  });
+
+  if (!loadSharedState()) {
+    els.rawInput.value = modes.quote.sample;
+    generate();
+  }
+  renderHistory();
+</script>
 </body>
 </html>

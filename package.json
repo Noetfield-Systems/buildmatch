@@ -1,0 +1,13 @@
+{
+  "name": "buildmatch",
+  "private": true,
+  "description": "Pure Flow landing page (cloned from pureflow.sourcea.app)",
+  "scripts": {
+    "dev": "serve . -l 3000",
+    "start": "serve . -l 3000",
+    "preview": "serve . -l 4173"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

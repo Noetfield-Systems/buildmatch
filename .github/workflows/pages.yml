@@ -1,8 +1,12 @@
 name: Deploy static site to GitHub Pages
 
 on:
-  push:
-    branches: [main]
+  # Soft-disabled 2026-07-12: the live site is served by the gh-pages branch (build_type=legacy,
+  # HTTP 200). This Actions->Pages workflow is superseded and failed red on every push to main
+  # ("Get Pages site failed"). Trigger is now manual-only so it stops firing red without touching
+  # the live deploy. To ADOPT this workflow as the deploy path instead, the founder must set
+  # Settings > Pages > Source = "GitHub Actions" (or add `enablement: true` to configure-pages)
+  # AND scope the upload path away from repo root — see PR discussion.
   workflow_dispatch:
 
 permissions:

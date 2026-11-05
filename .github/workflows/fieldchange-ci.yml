@@ -1,0 +1,31 @@
+name: fieldchange-ci
+on:
+  push:
+    paths:
+      - "apps/fieldchange/**"
+      - ".github/workflows/fieldchange-ci.yml"
+  pull_request:
+    paths:
+      - "apps/fieldchange/**"
+      - ".github/workflows/fieldchange-ci.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fieldchange-\${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/fieldchange
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Syntax checks
+        run: bun run check
+      - name: Pricing tests
+        run: bun test

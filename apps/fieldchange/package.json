@@ -1,0 +1,1 @@
+{"name":"@buildworkflow/fieldchange-desk","private":true,"type":"module","version":"0.1.0","scripts":{"start":"bun run server.ts","test":"bun test","check":"bun --check server.ts && bun --check src/pricing.ts"},"engines":{"bun":">=1.2.0"}}

@@ -47,7 +47,7 @@ function admin(req: Request) {
 }
 const sinaRevenueReadToken = process.env.SINA_FOUNDER_OS_REVENUE_READ_TOKEN || "";
 function sinaRevenueReader(req: Request) {
-  const supplied = (req.headers.get("authorization") || "").replace(/^Bearer\\s+/i, "").trim();
+  const supplied = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
   if (sinaRevenueReadToken.length < 32 || supplied.length < 32 || supplied.length !== sinaRevenueReadToken.length) return false;
   const expectedDigest = createHash("sha256").update(sinaRevenueReadToken).digest();
   const suppliedDigest = createHash("sha256").update(supplied).digest();

@@ -1,7 +1,7 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { calculateChangeOrder } from "./src/pricing.ts";
 
 const port = Number(process.env.PORT || 8080);
@@ -45,6 +45,39 @@ function allowed(req: Request) {
 function admin(req: Request) {
   return Boolean(adminToken) && req.headers.get("authorization") === "Bearer " + adminToken;
 }
+const sinaRevenueReadToken = process.env.SINA_FOUNDER_OS_REVENUE_READ_TOKEN || "";
+function sinaRevenueReader(req: Request) {
+  const supplied = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
+  if (sinaRevenueReadToken.length < 32 || supplied.length < 32 || supplied.length !== sinaRevenueReadToken.length) return false;
+  const expectedDigest = createHash("sha256").update(sinaRevenueReadToken).digest();
+  const suppliedDigest = createHash("sha256").update(supplied).digest();
+  return timingSafeEqual(expectedDigest, suppliedDigest);
+}
+function revenueSummary() {
+  const total = db.query("SELECT COUNT(*) AS total FROM pilot_requests").get() as { total: number };
+  const statusRows = db.query("SELECT status, COUNT(*) AS count FROM pilot_requests GROUP BY status ORDER BY status").all() as Array<{ status: string; count: number }>;
+  const tradeRows = db.query("SELECT trade, COUNT(*) AS count FROM pilot_requests GROUP BY trade ORDER BY count DESC, trade ASC LIMIT 10").all() as Array<{ trade: string; count: number }>;
+  const recent7d = db.query("SELECT COUNT(*) AS count FROM pilot_requests WHERE created_at >= ?").get(new Date(Date.now() - 7 * 86400000).toISOString()) as { count: number };
+  const recent30d = db.query("SELECT COUNT(*) AS count FROM pilot_requests WHERE created_at >= ?").get(new Date(Date.now() - 30 * 86400000).toISOString()) as { count: number };
+  const first = db.query("SELECT MIN(created_at) AS first FROM pilot_requests").get() as { first: string | null };
+  const last = db.query("SELECT MAX(created_at) AS last FROM pilot_requests").get() as { last: string | null };
+  return {
+    schema: "buildworkflow.fieldchange.revenue-summary.v1",
+    source: "fieldchange-desk",
+    generated_at: new Date().toISOString(),
+    freshness: "LIVE",
+    lead_count: Number(total.total || 0),
+    status_counts: Object.fromEntries(statusRows.map(row => [clean(row.status, 40) || "unknown", Number(row.count || 0)])),
+    trade_counts: tradeRows.map(row => ({ trade: clean(row.trade, 80), count: Number(row.count || 0) })),
+    recent_7d_requests: Number(recent7d.count || 0),
+    recent_30d_requests: Number(recent30d.count || 0),
+    first_request_at: first.first,
+    latest_request_at: last.last,
+    contracted_value: { state: "NOT_TRACKED" },
+    collected_revenue: { state: "NOT_TRACKED" },
+    privacy: { personal_data_returned: false, customer_records_returned: false }
+  };
+}
 function csvCell(v: unknown) { return '"' + String(v ?? "").replace(/"/g, '""').replace(/[\r\n]+/g, " ") + '"'; }
 
 Bun.serve({
@@ -57,6 +90,11 @@ Bun.serve({
       return new Response(Bun.file("public/admin.html"), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
     if (req.method === "GET" && path === "/privacy")
       return new Response(Bun.file("public/privacy.html"), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+    if (req.method === "GET" && path === "/api/integrations/sina/revenue-summary") {
+      if (!sinaRevenueReader(req)) return json({ error: "Unauthorized." }, 401);
+      try { return json(revenueSummary()); }
+      catch { return json({ error: "Revenue summary unavailable." }, 503); }
+    }
     if (req.method === "GET" && path === "/api/health") {
       try { db.query("SELECT 1").get(); return json({ ok: true, app: "fieldchange-desk", storage: "connected" }); }
       catch { return json({ ok: false, storage: "unavailable" }, 503); }

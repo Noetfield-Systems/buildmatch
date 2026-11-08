@@ -2,13 +2,12 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { randomUUID } from "node:crypto";
 
 const dataDir = mkdtempSync(join(tmpdir(), "fieldchange-revenue-test-"));
 const port = 21000 + Math.floor(Math.random() * 20000);
 const readToken = "fieldchange-sina-integration-test-token-0123456789abcdef";
 const base = "http://127.0.0.1:" + port;
-let processHandle: Bun.Subprocess<"ignore", "pipe", "ignore">;
+let processHandle: any;
 
 beforeAll(async () => {
   processHandle = Bun.spawn(["bun", "run", "server.ts"], {

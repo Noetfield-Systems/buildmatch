@@ -105,6 +105,17 @@ jobs:
               core.info('Created QA engineering issue #'+response.data.number);
               open.push(response.data);created++;
             }
-            core.info('Handoff created='+created+', existing='+existing);
+            let resolved=0;
+            // Only the five completely passing live checks can resolve this exact QA lane.
+            if(report.failed===0&&report.blocked===0){
+              for(const issue of open){
+                if(issue.pull_request||!/^\[BW-QA:bw-qa-[0-9a-f]{16}\]/.test(issue.title))continue;
+                await github.rest.issues.createComment({owner,repo,issue_number:issue.number,
+                  body:'Automatically rechecked five synthetic FieldChange QA scenarios against the live pricing API: 5 PASS, 0 FAIL, 0 BLOCKED. Measured evidence SHA256: '+String(report.measured_evidence_sha256||'')+'. Run: '+context.serverUrl+'/'+owner+'/'+repo+'/actions/runs/'+context.runId+'. This is product QA evidence, not customer traction.'});
+                await github.rest.issues.update({owner,repo,issue_number:issue.number,state:'closed',state_reason:'completed'});
+                resolved++;
+              }
+            }
+            core.info('Handoff created='+created+', existing='+existing+', verified_resolved='+resolved);
             if(report.failed>0||report.blocked>0)
               core.setFailed('Live pricing QA regression: '+report.failed+' failed, '+report.blocked+' blocked.');

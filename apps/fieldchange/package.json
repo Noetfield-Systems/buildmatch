@@ -7,7 +7,8 @@
     "start": "bun run server.ts",
     "test": "bun test",
     "check": "bun build server.ts --target=bun --external bun:sqlite --outfile=/tmp/fieldchange-server.js && bun build src/pricing.ts --target=bun --outfile=/tmp/fieldchange-pricing.js",
-    "qa:loop": "bun run qa/run.ts"
+    "qa:loop": "bun run qa/run.ts",
+    "qa:publish": "bun run qa/publish.ts"
   },
   "engines": {
     "bun": ">=1.2.0"

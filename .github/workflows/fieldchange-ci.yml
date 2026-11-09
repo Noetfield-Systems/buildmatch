@@ -28,6 +28,11 @@ jobs:
         run: bun test
       - name: Execute bounded Company OS quality feedback loop
         run: bun run qa:loop
+      - name: Compile four-role read-only Company OS evidence from five production probes
+        env:
+          QA_REPORT_FILE: qa-out/latest.json
+          COMPANY_OS_REPORT_FILE: ops-out/latest.json
+        run: bun run ops:cycle
       - name: Validate bounded issue-publisher syntax (no issues created)
         run: bun build qa/publish.ts --target=bun --outfile=/tmp/fieldchange-qa-publish.js
       - name: Preserve structured quality feedback / WorkPacket candidates

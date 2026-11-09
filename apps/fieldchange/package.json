@@ -1,1 +1,15 @@
-{"name":"@buildworkflow/fieldchange-desk","private":true,"type":"module","version":"0.1.0","scripts":{"start":"bun run server.ts","test":"bun test","check":"bun build server.ts --target=bun --external bun:sqlite --outfile=/tmp/fieldchange-server.js && bun build src/pricing.ts --target=bun --outfile=/tmp/fieldchange-pricing.js"},"engines":{"bun":">=1.2.0"}}
+{
+  "name": "@buildworkflow/fieldchange-desk",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "bun run server.ts",
+    "test": "bun test",
+    "check": "bun build server.ts --target=bun --external bun:sqlite --outfile=/tmp/fieldchange-server.js && bun build src/pricing.ts --target=bun --outfile=/tmp/fieldchange-pricing.js",
+    "qa:loop": "bun run qa/run.ts"
+  },
+  "engines": {
+    "bun": ">=1.2.0"
+  }
+}

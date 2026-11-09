@@ -1,4 +1,4 @@
-name: BuildWorkflow hourly live QA to engineering evidence
+name: BuildWorkflow hourly Continuous Company OS
 on:
   push:
     paths:
@@ -34,18 +34,27 @@ jobs:
           QA_REPORT_FILE: qa-out/latest.json
           QA_AI_REVIEW: "false"
         run: bun run qa:loop
+      - name: Four-role Company OS — five read-only Production probes
+        working-directory: apps/fieldchange
+        env:
+          COMPANY_OS_TARGET_URL: https://fieldchange-desk-production.up.railway.app
+          QA_REPORT_FILE: qa-out/latest.json
+          COMPANY_OS_REPORT_FILE: ops-out/latest.json
+        run: bun run ops:cycle
       - name: Persist bounded QA evidence
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: fieldchange-company-qa-${{ github.run_id }}
-          path: apps/fieldchange/qa-out/latest.json
+          path: |
+            apps/fieldchange/qa-out/latest.json
+            apps/fieldchange/ops-out/latest.json
           if-no-files-found: error
           retention-days: 30
 
   handoff:
     needs: observe
-    if: always() && needs.observe.result == 'success'
+    if: always() && needs.observe.result == 'success' && github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -62,7 +71,39 @@ jobs:
         with:
           script: |
             const fs=require('fs');
-            const report=JSON.parse(fs.readFileSync('evidence/latest.json','utf8'));
+            const report=JSON.parse(fs.readFileSync('evidence/qa-out/latest.json','utf8'));
+            const ops=JSON.parse(fs.readFileSync('evidence/ops-out/latest.json','utf8'));
+            const {evidence_sha256:opsSha,...opsWithoutSha}=ops;
+            const actualOpsSha=require('crypto').createHash('sha256').update(JSON.stringify(opsWithoutSha)).digest('hex');
+            const permittedIds=new Set(['monitor-health-security','developer-pricing-regression','tester-next-journey','growth-activation-gap']);
+            const validOps=ops.schema==='buildworkflow.fieldchange.company-ops.v1'
+              && ops.product_id==='noetfield.buildworkflow.fieldchange'
+              && ops.source_url==='https://fieldchange-desk-production.up.railway.app'
+              && ops.classification==='SYNTHETIC_QA_PLUS_READ_ONLY_LIVE_OBSERVATIONS_NOT_CUSTOMERS'
+              && /^[0-9a-f]{64}$/.test(opsSha||'') && opsSha===actualOpsSha
+              && ops.evidence?.qa_sha256===report.measured_evidence_sha256
+              && ops.roles?.tester?.personas===5
+              && ops.roles?.tester?.passed===report.passed
+              && ops.roles?.tester?.failed===report.failed
+              && ops.roles?.tester?.blocked===report.blocked
+              && ['PASS','DEGRADED'].includes(ops.roles?.monitor?.state)
+              && ops.roles?.growth?.real_users==='NOT_MEASURED'
+              && ops.roles?.growth?.synthetic_personas_count_as_customers===false
+              && ops.company_os?.permitted_to_dispatch===false
+              && ops.company_os?.workpackets_issued===0
+              && ops.company_os?.github_code_writes===0
+              && ops.company_os?.deployment_authorized===false
+              && ops.company_os?.customer_contact_performed===false
+              && Array.isArray(ops.company_os?.proposed_actions)
+              && ops.company_os.proposed_actions.length<=5
+              && ops.company_os.proposed_actions.every(a=>
+                  permittedIds.has(a.id) && a.authority==='CANDIDATE_NOT_EXECUTED' &&
+                  a.external_effects_authorized===false)
+              && Array.isArray(ops.roles?.monitor?.read_only_checks)
+              && ops.roles.monitor.read_only_checks.length===5
+              && Math.abs(Date.now()-Date.parse(ops.generated_at))<24*60*60*1000;
+            if(!validOps){core.setFailed('Untrusted Company OS operational evidence');return;}
+
             const valid=report.schema==='noetfield.company.fieldchange.qa-feedback.v1'
               && report.classification==='SYNTHETIC_QA_NOT_CUSTOMERS'
               && report.source==='read_only_live_price_api'
@@ -105,6 +146,33 @@ jobs:
               core.info('Created QA engineering issue #'+response.data.number);
               open.push(response.data);created++;
             }
+            // Existing Company OS issue owner. Typed candidates are NOT
+            // Governor permits, and neither an LLM nor this workflow may
+            // modify production code or customer records.
+            let opsCreated=0;
+            for(const candidate of ops.company_os.proposed_actions){
+              if(!['monitor-health-security','growth-activation-gap'].includes(candidate.id))continue;
+              const marker='[BW-OPS:'+candidate.id+']';
+              if(open.some(x=>!x.pull_request&&x.title.includes(marker)))continue;
+              const title=marker+' '+String(candidate.objective).slice(0,85);
+              const body=[
+                '## BuildWorkflow Continuous Company OS finding',
+                'Authority: CANDIDATE_NOT_EXECUTED; NO Governor, NAC or production Permit.',
+                'Evidence: live read-only product probes plus SYNTHETIC QA, NOT customer traction.',
+                'Role: '+candidate.role,
+                'Priority: '+candidate.priority,
+                'Product: '+ops.product_id,
+                'Ops SHA256: '+opsSha,
+                'QA SHA256: '+report.measured_evidence_sha256,
+                'Evidence reference: '+String(candidate.evidence_ref).slice(0,150),
+                'GitHub run: '+context.serverUrl+'/'+owner+'/'+repo+'/actions/runs/'+context.runId,
+                'Acceptance: reproduce and obtain bounded PR/authorized runtime work followed by independent QA.',
+                'No user outreach, synthetic leads, automatic deployment or claim of collected money.'
+              ].join('\n\n');
+              const response=await github.rest.issues.create({owner,repo,title,body});
+              open.push(response.data);opsCreated++;
+            }
+            core.info('Continuous Company OS operational issues created='+opsCreated);
             let resolved=0;
             // Only the five completely passing live checks can resolve this exact QA lane.
             if(report.failed===0&&report.blocked===0){
@@ -119,3 +187,5 @@ jobs:
             core.info('Handoff created='+created+', existing='+existing+', verified_resolved='+resolved);
             if(report.failed>0||report.blocked>0)
               core.setFailed('Live pricing QA regression: '+report.failed+' failed, '+report.blocked+' blocked.');
+            if(ops.roles.monitor.state==='DEGRADED')
+              core.setFailed('Live monitoring regression: '+ops.roles.monitor.failed.join(','));

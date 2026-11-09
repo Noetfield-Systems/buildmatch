@@ -28,6 +28,8 @@ jobs:
         run: bun test
       - name: Execute bounded Company OS quality feedback loop
         run: bun run qa:loop
+      - name: Compile bounded Company OS role contract (production probes run in scheduled QA)
+        run: bun build ops/run.ts --target=bun --outfile=/tmp/buildworkflow-ops.js
       - name: Validate bounded issue-publisher syntax (no issues created)
         run: bun build qa/publish.ts --target=bun --outfile=/tmp/fieldchange-qa-publish.js
       - name: Preserve structured quality feedback / WorkPacket candidates

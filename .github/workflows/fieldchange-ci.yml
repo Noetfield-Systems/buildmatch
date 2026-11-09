@@ -40,6 +40,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fieldchange-five-persona-qa-${{ github.run_id }}
-          path: apps/fieldchange/qa-out/latest.json
+          path: |
+            apps/fieldchange/qa-out/latest.json
+            apps/fieldchange/ops-out/latest.json
           if-no-files-found: warn
           retention-days: 30

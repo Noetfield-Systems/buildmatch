@@ -5,6 +5,14 @@ export type PricingInput = {
 };
 function number(value: unknown, name: string, fallback = 0, max = 10_000_000): number {
   if (value === undefined || value === null || value === "") return fallback;
+  // Never silently coerce boolean, arrays or objects into a customer-facing CAD quote.
+  // HTML number inputs produce decimal strings, which are explicitly supported.
+  if (typeof value !== "number" && typeof value !== "string") {
+    throw new Error(name + " must be a non-negative decimal number.");
+  }
+  if (typeof value === "string" && !/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/.test(value.trim())) {
+    throw new Error(name + " must be a non-negative decimal number.");
+  }
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0 || n > max) throw new Error(name + " must be between 0 and " + max + ".");
   return n;

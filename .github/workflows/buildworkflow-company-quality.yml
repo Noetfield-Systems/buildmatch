@@ -1,0 +1,110 @@
+name: BuildWorkflow company QA to engineering evidence
+on:
+  push:
+    paths:
+      - ".github/workflows/buildworkflow-company-quality.yml"
+  schedule:
+    - cron: "20 15 * * *"
+  workflow_dispatch:
+concurrency:
+  group: buildworkflow-company-qa
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout existing FieldChange synthetic QA only
+        uses: actions/checkout@v4
+        with:
+          ref: feat/fieldchange-five-qa-personas-20261109
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Five persona journeys against live pricing API; no CRM writes
+        id: quality
+        continue-on-error: true
+        working-directory: apps/fieldchange
+        env:
+          QA_TARGET_URL: https://fieldchange-desk-production.up.railway.app
+          QA_REPORT_FILE: qa-out/latest.json
+          QA_AI_REVIEW: "false"
+        run: bun run qa:loop
+      - name: Persist bounded QA evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fieldchange-company-qa-${{ github.run_id }}
+          path: apps/fieldchange/qa-out/latest.json
+          if-no-files-found: error
+          retention-days: 30
+
+  handoff:
+    needs: observe
+    if: always() && needs.observe.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Download JSON only without checkout of untrusted QA code
+        uses: actions/download-artifact@v4
+        with:
+          name: fieldchange-company-qa-${{ github.run_id }}
+          path: evidence
+      - name: Idempotent GitHub Company OS work items; no customer writes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs=require('fs');
+            const report=JSON.parse(fs.readFileSync('evidence/latest.json','utf8'));
+            const valid=report.schema==='noetfield.company.fieldchange.qa-feedback.v1'
+              && report.classification==='SYNTHETIC_QA_NOT_CUSTOMERS'
+              && report.source==='read_only_live_price_api'
+              && report.source_url==='https://fieldchange-desk-production.up.railway.app'
+              && report.personas===5
+              && report.execution?.customer_records_created===0
+              && report.execution?.outbound_messages_sent===0
+              && report.execution?.production_mutations===0
+              && Array.isArray(report.company_workpacket_candidates)
+              && report.company_workpacket_candidates.length<=5;
+            if(!valid){core.setFailed('Untrusted QA data');return;}
+            const {owner,repo}=context.repo;
+            if(owner!=='Noetfield-Systems'||repo!=='buildmatch'){
+              core.setFailed('Repository identity mismatch');return;
+            }
+            const open=await github.paginate(github.rest.issues.listForRepo,{owner,repo,state:'open',per_page:100});
+            let created=0,existing=0;
+            for(const work of report.company_workpacket_candidates){
+              const id=String(work.workpacket_id||'');
+              if(!/^bw-qa-[0-9a-f]{16}$/.test(id)||work.status!=='CANDIDATE_NOT_EXECUTED'||
+                 work.external_customer_contact!==false||work.production_deployment_authorized!==false){
+                core.setFailed('Untrusted workpacket candidate');return;
+              }
+              const marker='[BW-QA:'+id+']';
+              if(open.some(x=>!x.pull_request&&x.title.includes(marker))){existing++;continue;}
+              const title=marker+' '+String(work.objective||'FieldChange regression').slice(0,80);
+              const body=[
+                '## Real FieldChange pricing API QA regression',
+                'Classification: synthetic operator QA, NOT a real buyer report.',
+                'Company OS owner: BuildWorkflow Product Engineering.',
+                'State: evidence-backed candidate; NOT production authorization.',
+                'Evidence SHA256: '+String(report.measured_evidence_sha256||'').slice(0,64),
+                'CI run: '+context.serverUrl+'/'+owner+'/'+repo+'/actions/runs/'+context.runId,
+                'Live URL: '+report.source_url,
+                'Repro evidence JSON:',
+                JSON.stringify(work.evidence,null,2).slice(0,5500),
+                'Acceptance: bounded code PR, five persona regression tests and independent verification. No synthetic leads or outbound communication.'
+              ].join('\n\n');
+              const response=await github.rest.issues.create({owner,repo,title,body});
+              core.info('Created QA engineering issue #'+response.data.number);
+              open.push(response.data);created++;
+            }
+            core.info('Handoff created='+created+', existing='+existing);
+            if(report.failed>0||report.blocked>0)
+              core.setFailed('Live pricing QA regression: '+report.failed+' failed, '+report.blocked+' blocked.');

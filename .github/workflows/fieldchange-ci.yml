@@ -24,5 +24,15 @@ jobs:
           bun-version: latest
       - name: Compile server and pricing engine
         run: bun run check
-      - name: Run deterministic pricing tests
+      - name: Run deterministic pricing tests and five synthetic operator QA personas
         run: bun test
+      - name: Execute bounded Company OS quality feedback loop
+        run: bun run qa:loop
+      - name: Preserve structured quality feedback / WorkPacket candidates
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fieldchange-five-persona-qa-${{ github.run_id }}
+          path: apps/fieldchange/qa-out/latest.json
+          if-no-files-found: warn
+          retention-days: 30

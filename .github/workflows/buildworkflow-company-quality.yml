@@ -1,10 +1,10 @@
-name: BuildWorkflow company QA to engineering evidence
+name: BuildWorkflow hourly live QA to engineering evidence
 on:
   push:
     paths:
       - ".github/workflows/buildworkflow-company-quality.yml"
   schedule:
-    - cron: "20 15 * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
 concurrency:
   group: buildworkflow-company-qa
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout existing FieldChange synthetic QA only
         uses: actions/checkout@v4
         with:
-          ref: feat/fieldchange-five-qa-personas-20261109
+          ref: product/buildworkflow-fieldchange-mvp
           persist-credentials: false
       - uses: oven-sh/setup-bun@v2
         with:

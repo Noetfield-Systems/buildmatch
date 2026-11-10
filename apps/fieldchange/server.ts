@@ -3,6 +3,7 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { calculateChangeOrder } from "./src/pricing.ts";
+import { initSinaEventOutbox, enqueuePilotObserved, dispatchSinaEventOutbox } from "./src/sina-org-events.ts";
 
 const port = Number(process.env.PORT || 8080);
 const dbPath = process.env.DATABASE_PATH || "/tmp/fieldchange.sqlite";
@@ -15,6 +16,20 @@ db.exec("CREATE INDEX IF NOT EXISTS pilot_created_idx ON pilot_requests(created_
 const insertLead = db.query("INSERT INTO pilot_requests (id,company,contact_name,trade,email,phone,monthly_volume,current_process,problem,consent,ip_hash,created_at) VALUES (?,?,?,?,?,?,?,?,?,1,?,?)");
 const recentLeads = db.query("SELECT id,company,contact_name,trade,email,phone,monthly_volume,current_process,problem,status,created_at FROM pilot_requests ORDER BY created_at DESC LIMIT 200");
 const removeLead = db.query("DELETE FROM pilot_requests WHERE id = ?");
+initSinaEventOutbox(db);
+let sinaOutboxSending = false;
+async function pumpSinaOutbox(): Promise<void> {
+  if (sinaOutboxSending) return;
+  sinaOutboxSending = true;
+  try { await dispatchSinaEventOutbox(db); }
+  catch (err) { console.warn("sina_org_delivery_degraded", err instanceof Error ? err.name : "unknown"); }
+  finally { sinaOutboxSending = false; }
+}
+// A bounded transport retry, not a second strategic/workforce scheduler.
+// No model calls, customer writes, or invented events.
+const sinaRelayTimer = setInterval(() => { void pumpSinaOutbox(); }, 30_000);
+sinaRelayTimer.unref?.();
+void pumpSinaOutbox();
 const rateLimits = new Map<string, number[]>();
 
 function clean(value: unknown, max = 500): string {
@@ -117,7 +132,13 @@ Bun.serve({
       if (!company || !contact || !trade || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || b.consent !== true)
         return json({ error: "Company, contact name, trade, valid email and consent are required." }, 400);
       try {
-        insertLead.run(randomUUID(), company, contact, trade, email, phone, volume, process, problem, ipHash(req), new Date().toISOString());
+        const leadId = randomUUID(), observedAt = new Date().toISOString();
+        db.transaction(() => {
+          insertLead.run(leadId, company, contact, trade, email, phone, volume,
+                         process, problem, ipHash(req), observedAt);
+          enqueuePilotObserved(db, leadId, observedAt);
+        })();
+        void pumpSinaOutbox();
         return json({ ok: true, message: "Pilot request received." }, 201);
       } catch { return json({ error: "The request could not be saved." }, 500); }
     }

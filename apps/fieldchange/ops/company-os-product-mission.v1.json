@@ -1,0 +1,897 @@
+{
+  "schema": "buildworkflow.company-os.product-mission.v1",
+  "product_id": "noetfield.buildworkflow.fieldchange",
+  "mission_id": "BW-2026-11-GROWTH-100",
+  "company_id": "noetfield-systems-inc",
+  "operating_mode": "CANDIDATE_ASSIGNMENTS_NOT_RUNTIME_PROOF",
+  "north_star": "real_extra_work_to_approved_change_order_to_invoice_ready_evidence",
+  "source": {
+    "repository": "Noetfield-Systems/buildmatch",
+    "branch": "product/buildworkflow-fieldchange-mvp",
+    "railway_project": "buildworkflow-fieldchange",
+    "railway_service": "fieldchange-desk"
+  },
+  "boundaries": {
+    "cross_product_writes": false,
+    "rwa_wave_1_isolation": true,
+    "outreach_allowed": false,
+    "synthetic_customer_proof": false,
+    "auto_spend": false,
+    "approve_paid_offer_manually": true
+  },
+  "roles": [
+    {
+      "role": "Strategy",
+      "responsibility": "prioritize, stop/go, Founder Pulse"
+    },
+    {
+      "role": "Revenue",
+      "responsibility": "offers, Stripe confirmed payments, delivery margin"
+    },
+    {
+      "role": "Growth",
+      "responsibility": "SEO, conversion instrumentation and read-only funnel"
+    },
+    {
+      "role": "Partnerships",
+      "responsibility": "research Vancouver channels; no outreach before release"
+    },
+    {
+      "role": "Customer Success",
+      "responsibility": "5 genuine interviews, pilots, renewals and support"
+    },
+    {
+      "role": "Engineering",
+      "responsibility": "GitHub PRs, product UX, tests and deploy evidence"
+    },
+    {
+      "role": "Independent Verifier",
+      "responsibility": "audit evidence, production isolation, customer claim validation"
+    }
+  ],
+  "cadence": {
+    "hourly": {
+      "state": "EXISTING_GITHUB_QA_ONLY",
+      "workflow": "buildworkflow-company-quality.yml"
+    },
+    "daily": {
+      "state": "PROPOSED",
+      "output": "blocked actions and overdue tasks"
+    },
+    "weekly": {
+      "state": "PROPOSED",
+      "output": "lead interviews, SEO, competitor and proof review"
+    },
+    "monthly": {
+      "state": "PROPOSED",
+      "output": "collected cash and contribution margin"
+    }
+  },
+  "workflow_states": [
+    "PROPOSED",
+    "READY",
+    "AUTHORIZED",
+    "RUNNING",
+    "QA_PENDING",
+    "VERIFIED",
+    "CLOSED",
+    "BLOCKED",
+    "FAILED"
+  ],
+  "first_workpackets": [
+    "BW-001",
+    "BW-002",
+    "BW-003",
+    "BW-004",
+    "BW-010",
+    "BW-011",
+    "BW-026",
+    "BW-030",
+    "BW-032",
+    "BW-033",
+    "BW-081",
+    "BW-090"
+  ],
+  "backlog": [
+    {
+      "id": "BW-001",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Verify a real consented assessment-to-receipt-to-follow-up transaction",
+      "done_definition": "One persisted assessment, matching receipt and assigned task; synthetic smoke data excluded from customer reporting"
+    },
+    {
+      "id": "BW-002",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Verify ADMIN_TOKEN and ORDER_LINK_SECRET strength without disclosing values",
+      "done_definition": "Runtime yes/no secrets check and safe negative access tests"
+    },
+    {
+      "id": "BW-003",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Unify the canonical product ID across assessment, CRM, Company OS and event transport",
+      "done_definition": "One noetfield.buildworkflow.fieldchange namespace, migration-compatible receipts"
+    },
+    {
+      "id": "BW-004",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Prove product isolation from RWA Wave 1, SignalForge and other databases",
+      "done_definition": "Read-only isolation test plus rejected cross-product identifier test"
+    },
+    {
+      "id": "BW-005",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Add idempotency to assessment creation and repeat-click protection",
+      "done_definition": "Double submit creates exactly one intended assessment + task"
+    },
+    {
+      "id": "BW-006",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Harden private links, origin checks, payload bounds and authorization",
+      "done_definition": "Negative-path tests pass for access, replay and malformed requests"
+    },
+    {
+      "id": "BW-007",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Prove recoverability of SQLite volume and attached evidence",
+      "done_definition": "Verified restore of encrypted backup in an isolated environment"
+    },
+    {
+      "id": "BW-008",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Add redacted request/exception tracing for the commercial funnel",
+      "done_definition": "Errors identifiable without names, emails, access tokens or field files"
+    },
+    {
+      "id": "BW-009",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Separate real customer evidence, test fixtures and demo counters everywhere",
+      "done_definition": "No test event can increment verified buyer or revenue metrics"
+    },
+    {
+      "id": "BW-010",
+      "priority": "P0",
+      "owner_role": "Trust & Independent Verification",
+      "state": "PROPOSED",
+      "objective": "Extend existing scheduled production QA to assessment, proof and operations-denial routes",
+      "done_definition": "Hourly report checks new surfaces with no CRM writes"
+    },
+    {
+      "id": "BW-011",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Review and integrate existing FieldChange Pro PR #16 without regressing production",
+      "done_definition": "Private photo evidence and office features pass CI and deployment comparison"
+    },
+    {
+      "id": "BW-012",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Enable mobile photo capture with consented storage and EXIF removal",
+      "done_definition": "Job-linked encrypted references, size limits and verified deletion"
+    },
+    {
+      "id": "BW-013",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Capture crew time, material quantity and equipment on a T&M ticket",
+      "done_definition": "Priced ticket with source-linked line items"
+    },
+    {
+      "id": "BW-014",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Attach each evidence item to an exact scope line or cost item",
+      "done_definition": "Office can trace change description to supporting artifacts"
+    },
+    {
+      "id": "BW-015",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Create immutable approval-relevant versions of each change order",
+      "done_definition": "Revision history preserves former price and decision"
+    },
+    {
+      "id": "BW-016",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Complete no-login GC/owner written approval with clear signatory role",
+      "done_definition": "Paid review link records verified timestamped decision"
+    },
+    {
+      "id": "BW-017",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Support customer rejection, requested revision and resubmission",
+      "done_definition": "Rejected CO returns to a new version without losing history"
+    },
+    {
+      "id": "BW-018",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Add approval event audit log with signer, decision and prior status",
+      "done_definition": "Exportable chronological event history"
+    },
+    {
+      "id": "BW-019",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Implement invoice-ready gate for scope, approved amount, evidence and PO",
+      "done_definition": "Status stays not ready until explicit requirements are met"
+    },
+    {
+      "id": "BW-020",
+      "priority": "P0",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Export approved, formula-safe accounting handoff with PDF evidence index",
+      "done_definition": "Finance team receives defensible pack, not a fake issued tax invoice"
+    },
+    {
+      "id": "BW-021",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Build a research-only list of 25 trade-heavy Metro Vancouver contractors",
+      "done_definition": "25 source-attributed prospects; no messages sent before gate"
+    },
+    {
+      "id": "BW-022",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Balance the prospect pool across HVAC, plumbing, mechanical and electrical",
+      "done_definition": "Trade-by-trade buyer/problem hypothesis comparison"
+    },
+    {
+      "id": "BW-023",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Score prospects by extra-work volume, handoff pain and decision access",
+      "done_definition": "Visible fit score and rationale for the top ten"
+    },
+    {
+      "id": "BW-024",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Prepare five-question interview guide and source-linked note template",
+      "done_definition": "Structured buyer/pain/evidence/objection/next action format"
+    },
+    {
+      "id": "BW-025",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Prepare a permission-based interview booking flow after outbound release",
+      "done_definition": "Booking method and consent state in each real record"
+    },
+    {
+      "id": "BW-026",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Complete first five genuine contractor interviews and attach evidence refs",
+      "done_definition": "Five documented, verified interviews; synthetic examples excluded"
+    },
+    {
+      "id": "BW-027",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Run one real jobsite-to-office workflow shadow pilot",
+      "done_definition": "Measured baseline and after state on one permissioned project"
+    },
+    {
+      "id": "BW-028",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Secure first contractor-supplied actual change order with supporting proof",
+      "done_definition": "Real CO source/approval/invoice status independently checked"
+    },
+    {
+      "id": "BW-029",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Run a tightly scoped three-contractor pilot cohort after first proof",
+      "done_definition": "Three distinct contractor outcomes with owner and next action"
+    },
+    {
+      "id": "BW-030",
+      "priority": "P0",
+      "owner_role": "Growth + Revenue",
+      "state": "PROPOSED",
+      "objective": "Close the first paid validation order and retain settlement evidence",
+      "done_definition": "Stripe-confirmed real payment plus fulfilled deliverable and margin"
+    },
+    {
+      "id": "BW-031",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Package a free diagnostic as the entry offer",
+      "done_definition": "Clear free-to-paid handoff, no false success promise"
+    },
+    {
+      "id": "BW-032",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Activate and verify the existing CAD 9 approval pack when Stripe is configured",
+      "done_definition": "Signed payment webhook and exactly one paid pack"
+    },
+    {
+      "id": "BW-033",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Deliver existing CAD 149 Change Order Rescue issue #15",
+      "done_definition": "Paid order → real evidence → verified artifact → secure delivery"
+    },
+    {
+      "id": "BW-034",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Offer CAD 750–1,500 workflow setup as a proposed price test",
+      "done_definition": "Founder-priced statement of work and first acceptance/decline evidence"
+    },
+    {
+      "id": "BW-035",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Test CAD 399–699/month managed change-order desk as a proposed offer",
+      "done_definition": "Monthly scope, allowance, upsell and paid renewal data"
+    },
+    {
+      "id": "BW-036",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Measure contribution margin per pack, rescue case and managed engagement",
+      "done_definition": "Fees, labor, model cost, refunds and taxes separated"
+    },
+    {
+      "id": "BW-037",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "A/B test high-intent pricing copy only after sufficient qualified traffic",
+      "done_definition": "Conversion by segment without invented statistical certainty"
+    },
+    {
+      "id": "BW-038",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Track checkout abandonment and recovery permission",
+      "done_definition": "Consent-safe drop-off count and appropriately bounded follow-up"
+    },
+    {
+      "id": "BW-039",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Publish service scope, delivery milestones, refund terms and exclusions",
+      "done_definition": "Buyer accepts a precise deliverable, not vague automation"
+    },
+    {
+      "id": "BW-040",
+      "priority": "P0",
+      "owner_role": "Revenue",
+      "state": "PROPOSED",
+      "objective": "Reconcile Stripe charges, refunds and delivered work monthly",
+      "done_definition": "Collected cash and profit backed by external payment records"
+    },
+    {
+      "id": "BW-041",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Audit technical SEO, indexing, canonicals, sitemap and mobile usability",
+      "done_definition": "Search Console index coverage and Core Web Vitals baseline"
+    },
+    {
+      "id": "BW-042",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Publish HVAC rooftop and duct extra-work use cases",
+      "done_definition": "Useful job-specific examples and measurable calculator starts"
+    },
+    {
+      "id": "BW-043",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Publish plumbing extra-work evidence and approval guide",
+      "done_definition": "Qualified plumber diagnostic sessions"
+    },
+    {
+      "id": "BW-044",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Publish electrical change-order and added-circuit guide",
+      "done_definition": "Electrical calculator-to-assessment completion"
+    },
+    {
+      "id": "BW-045",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Publish mechanical coordination and drawing-revision guide",
+      "done_definition": "Mechanical buyer engagement evidence"
+    },
+    {
+      "id": "BW-046",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Create a true T&M ticket checklist and printable template",
+      "done_definition": "Qualified template use, not vanity download count"
+    },
+    {
+      "id": "BW-047",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Publish invoice-ready evidence guide for BC specialty subcontractors",
+      "done_definition": "Organic engaged traffic that starts an assessment"
+    },
+    {
+      "id": "BW-048",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Publish Vancouver-specific contractor operations case notes only after proof",
+      "done_definition": "Source-verified local story, no fake logos or claims"
+    },
+    {
+      "id": "BW-049",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Evaluate Google Business Profile eligibility before creating a local listing",
+      "done_definition": "Compliant local presence if eligibility is met"
+    },
+    {
+      "id": "BW-050",
+      "priority": "P1",
+      "owner_role": "Growth",
+      "state": "PROPOSED",
+      "objective": "Instrument Search Console and privacy-respecting funnel attribution",
+      "done_definition": "Organic source → price → assessment → qualified buyer"
+    },
+    {
+      "id": "BW-051",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Research plumbing/HVAC/electrical supply-house education channels",
+      "done_definition": "Named channels with non-intrusive partnership fit"
+    },
+    {
+      "id": "BW-052",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Develop co-delivery option for local construction bookkeepers",
+      "done_definition": "One evidence-to-invoice referral workflow ready for testing"
+    },
+    {
+      "id": "BW-053",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Collaborate with independent estimators on priced CO packs",
+      "done_definition": "Estimator review checklist and referral proposal"
+    },
+    {
+      "id": "BW-054",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Prepare BC trade association mini-workshop",
+      "done_definition": "20-minute evidence-based change-order tutorial"
+    },
+    {
+      "id": "BW-055",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Recruit GC project managers to critique approval packets",
+      "done_definition": "Two genuine outside-user reviews without unsolicited outreach before gate"
+    },
+    {
+      "id": "BW-056",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Import approved existing contacts only with provenance and consent",
+      "done_definition": "Deduplicated, scoped contractor relationship register"
+    },
+    {
+      "id": "BW-057",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Offer a referral incentive payable only from collected revenue",
+      "done_definition": "Written referral unit economics and clear eligibility"
+    },
+    {
+      "id": "BW-058",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Create co-brandable but non-misleading change-order sample pack",
+      "done_definition": "Partner demo asset clearly labeled illustrative"
+    },
+    {
+      "id": "BW-059",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Offer embed/share link to the free calculator",
+      "done_definition": "Tracked high-intent referral starts"
+    },
+    {
+      "id": "BW-060",
+      "priority": "P1",
+      "owner_role": "Partnerships",
+      "state": "PROPOSED",
+      "objective": "Produce a two-minute Vancouver field-to-office explainer",
+      "done_definition": "Real product capture demo with no fabricated client outcomes"
+    },
+    {
+      "id": "BW-061",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Create repeatable job and trade template libraries",
+      "done_definition": "Second CO takes fewer clicks than first"
+    },
+    {
+      "id": "BW-062",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Create organization-specific contractor workspaces",
+      "done_definition": "Each company isolated, with governed sharing"
+    },
+    {
+      "id": "BW-063",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Define field-worker, PM, estimator and finance permissions",
+      "done_definition": "Role-based access enforced server-side"
+    },
+    {
+      "id": "BW-064",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Optimize on-phone capture time with real contractors",
+      "done_definition": "Median time to first usable ticket measured"
+    },
+    {
+      "id": "BW-065",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Support offline-first draft capture and safe reconnect",
+      "done_definition": "No duplicate CO on reconnect or interrupted network"
+    },
+    {
+      "id": "BW-066",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Track GC/owner aging and reminders only for authorized requests",
+      "done_definition": "Days waiting and owner visible"
+    },
+    {
+      "id": "BW-067",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Add explicit 'ball in court' states for approvals",
+      "done_definition": "Every active CO has next responsible party"
+    },
+    {
+      "id": "BW-068",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Create first-job guided onboarding and training checklist",
+      "done_definition": "Measured activation: first real CO successfully recorded"
+    },
+    {
+      "id": "BW-069",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Provide a practical human fallback and SLA for managed pilots",
+      "done_definition": "Ticket owner and escalation history visible"
+    },
+    {
+      "id": "BW-070",
+      "priority": "P2",
+      "owner_role": "Customer Success",
+      "state": "PROPOSED",
+      "objective": "Measure first-to-second CO retention by customer cohort",
+      "done_definition": "Repeat meaningful usage over 30/60 days"
+    },
+    {
+      "id": "BW-071",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Draft scope from a recorded field voice note with human correction",
+      "done_definition": "Transcription source attached; no auto approval"
+    },
+    {
+      "id": "BW-072",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Extract drawing and revision references from user-provided documents",
+      "done_definition": "Page and sheet references with confidence and correction"
+    },
+    {
+      "id": "BW-073",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Flag approval prerequisites from customer-supplied contract clauses",
+      "done_definition": "Human-reviewed checklist with actual clause citations"
+    },
+    {
+      "id": "BW-074",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Support project-specific allowable markup and margin constraints",
+      "done_definition": "Explicit caps and mathematical reconciliation"
+    },
+    {
+      "id": "BW-075",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Create controlled labor/material/equipment rate libraries per project",
+      "done_definition": "Versioned rate source for each price"
+    },
+    {
+      "id": "BW-076",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Generate source-grounded missing-evidence recommendations",
+      "done_definition": "Each recommendation points to a missing artifact field"
+    },
+    {
+      "id": "BW-077",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Compare GC and subcontractor approval views without data leakage",
+      "done_definition": "Scoped reviewer link and clean separation"
+    },
+    {
+      "id": "BW-078",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Generate redline/diff between CO revisions",
+      "done_definition": "Readable changed costs, scope and terms"
+    },
+    {
+      "id": "BW-079",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Ship a reviewed QuickBooks-compatible export or connector",
+      "done_definition": "Verified mapping to sample accounting data"
+    },
+    {
+      "id": "BW-080",
+      "priority": "P2",
+      "owner_role": "Engineering",
+      "state": "PROPOSED",
+      "objective": "Offer Procore/Clearstory-compatible CSV handoff instead of replacement",
+      "done_definition": "Interoperable export with preservation of source history"
+    },
+    {
+      "id": "BW-081",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Register BuildWorkflow as a single product-specific mission inside existing Company OS",
+      "done_definition": "One namespace, product owner and GitHub/Railway source IDs"
+    },
+    {
+      "id": "BW-082",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Assign Engineering agent to bounded issue-to-PR work",
+      "done_definition": "Code PR links to issue, tests and release evidence"
+    },
+    {
+      "id": "BW-083",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Assign Independent QA agent to verify production and evidence",
+      "done_definition": "Separate approval of actual runtime outcomes"
+    },
+    {
+      "id": "BW-084",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Assign Revenue agent to offers, checkout and real collections",
+      "done_definition": "Daily exception queue; no invented payment"
+    },
+    {
+      "id": "BW-085",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Assign Growth agent to search, funnel and SEO experiments",
+      "done_definition": "Source-attributed traffic and conversion proposals"
+    },
+    {
+      "id": "BW-086",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Assign Partnerships agent to prospects and channels",
+      "done_definition": "Research-only until outreach release"
+    },
+    {
+      "id": "BW-087",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Assign Customer Success agent to interviews, pilot delivery and retention",
+      "done_definition": "Each customer has owner, next action and success evidence"
+    },
+    {
+      "id": "BW-088",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Add Founder Pulse summarizing BuildWorkflow state separately",
+      "done_definition": "One decision-ready digest, no RWA/other product blending"
+    },
+    {
+      "id": "BW-089",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Bound agent runtime budget, concurrency and retry rules",
+      "done_definition": "No unbounded compute or duplicate work"
+    },
+    {
+      "id": "BW-090",
+      "priority": "P1",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Require independently verified WorkPacket→artifact→receipt closure",
+      "done_definition": "Failed, blocked and incomplete states remain visible"
+    },
+    {
+      "id": "BW-091",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Reuse the existing hourly production observer, not another scheduler",
+      "done_definition": "Health, auth-denial, proof and UI probes retain timestamps"
+    },
+    {
+      "id": "BW-092",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Run a daily sales and fulfillment exception triage",
+      "done_definition": "Overdue action and blocked pilot are actionable work items"
+    },
+    {
+      "id": "BW-093",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Run weekly zero-spam landing/CTA review",
+      "done_definition": "Only evidence-supported changes enter the build queue"
+    },
+    {
+      "id": "BW-094",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Run weekly five-interview discovery synthesis",
+      "done_definition": "Buyer patterns, contradiction flags and hypotheses"
+    },
+    {
+      "id": "BW-095",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Run weekly competitor and BC contractor workflow research",
+      "done_definition": "Cited changes with practical next product decision"
+    },
+    {
+      "id": "BW-096",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Open bounded repair PRs for independently reproduced defects",
+      "done_definition": "Never merge a green status from failed evidence"
+    },
+    {
+      "id": "BW-097",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Add separate verification before marking customer deliverables done",
+      "done_definition": "Actual artifact, recipient, outcome and receipt match"
+    },
+    {
+      "id": "BW-098",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Review monthly per-segment conversion, margin and cash collection",
+      "done_definition": "Keep funding decisions tied to collected cash"
+    },
+    {
+      "id": "BW-099",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Define stop/pivot/expand thresholds for each trade and service offer",
+      "done_definition": "Evidence-based decisions, no perpetual vanity pilots"
+    },
+    {
+      "id": "BW-100",
+      "priority": "P2",
+      "owner_role": "Company OS Governor / Product Operating Unit",
+      "state": "PROPOSED",
+      "objective": "Expand outside Vancouver only after paid repeatability and retention",
+      "done_definition": "First adjacent market selected by verified demand"
+    }
+  ]
+}

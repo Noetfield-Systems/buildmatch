@@ -4,6 +4,7 @@ import { dirname } from "node:path";
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { calculateChangeOrder } from "./src/pricing.ts";
 import { initOrders, handleOrderRoute, revenueFromOrders } from "./src/orders.ts";
+import { initAttachments, handleEvidenceRoute } from "./src/evidence.ts";
 import { canonicalRedirect } from "./src/canonical.ts";
 import { initSinaEventOutbox, enqueuePilotObserved, dispatchSinaEventOutbox } from "./src/sina-org-events.ts";
 
@@ -20,6 +21,7 @@ const recentLeads = db.query("SELECT id,company,contact_name,trade,email,phone,m
 const removeLead = db.query("DELETE FROM pilot_requests WHERE id = ?");
 initSinaEventOutbox(db);
 initOrders(db);
+initAttachments(db);
 let sinaOutboxSending = false;
 async function pumpSinaOutbox(): Promise<void> {
   if (sinaOutboxSending) return;
@@ -105,10 +107,14 @@ Bun.serve({
     const url = new URL(req.url), path = url.pathname;
     const canonical = canonicalRedirect(req.method, req.headers.get("host") || url.host, req.url);
     if (canonical) return Response.redirect(canonical, 308);
+    const evidenceResult = await handleEvidenceRoute(req, db);
+    if (evidenceResult) return evidenceResult;
     const orderResult = await handleOrderRoute(req, db);
     if (orderResult) return orderResult;
     if (req.method === "GET" && (path === "/tools/change-order-calculator" || path === "/change-order-calculator" || path === "/calculator"))
       return new Response(Bun.file("public/calculator.html"), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+    if (req.method === "GET" && path === "/workspace")
+      return new Response(Bun.file("public/workspace.html"), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "no-referrer" } });
     if (req.method === "GET" && path === "/order")
       return new Response(Bun.file("public/order.html"), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "no-referrer" } });
     if (req.method === "GET" && path === "/terms")

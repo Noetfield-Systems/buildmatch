@@ -1,0 +1,93 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#0b1929">
+<title>Private Change Order | BuildWorkflow</title>
+<style>
+:root{--ink:#112a3b;--navy:#0b1929;--teal:#0b796c;--muted:#647987;--line:#dce6e6}*{box-sizing:border-box}body{margin:0;background:#f5f8f5;color:var(--ink);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--teal)}.top{background:#0d2133;color:white;padding:17px 0}.shell{width:min(850px,calc(100% - 32px));margin:auto}.brand{font-size:19px;font-weight:900;letter-spacing:-.05em;text-decoration:none;color:#e7fff2}.brand small{display:block;font-size:10px;font-weight:750;letter-spacing:.2em;color:#a6d8ca}
+main{padding:45px 0 70px}.card{background:white;border:1px solid var(--line);border-radius:17px;box-shadow:0 15px 55px #112e3920;margin-bottom:19px;overflow:hidden}.header{padding:31px 34px;background:linear-gradient(135deg,#0e2537,#125453);color:#fff}.header .kicker{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:#aeecda;font-weight:900}.header h1{font-size:clamp(27px,5vw,38px);letter-spacing:-.06em;line-height:1.1;margin:12px 0}.header p{margin:0;color:#c5dfda;font-size:13px}.content{padding:30px 34px}
+.status{display:inline-flex;align-items:center;padding:7px 12px;border-radius:50px;background:#e7f3eb;color:#145f49;text-transform:uppercase;font-weight:900;letter-spacing:.1em;font-size:10px;margin-bottom:22px}.status.unpaid{background:#fff4e3;color:#95581e}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:17px 25px}.fact span{font-size:11px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;color:#738491;display:block}.fact strong{font-size:15px;font-weight:750;display:block;overflow-wrap:anywhere}
+h2{font-size:21px;letter-spacing:-.035em;margin:10px 0}.scope{white-space:pre-wrap;overflow-wrap:anywhere;color:#345468;line-height:1.8}.amount{margin:24px 0;padding:23px;background:#e9f5ee;border:1px solid #cde5d5;border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:16px}.amount label{font-size:12px;color:#436a5b}.amount strong{display:block;font-size:31px;letter-spacing:-.05em;color:#145846}
+.notice{border:1px solid #e3e2cb;background:#fffbed;border-radius:10px;padding:15px 17px;color:#685e36;font-size:13px}.actions{display:flex;gap:11px;flex-wrap:wrap;margin:18px 0 0}
+.button{font:inherit;border:0;border-radius:11px;padding:13px 18px;background:var(--teal);color:white;font-weight:850;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.button.secondary{background:#eef3f3;color:#174a48}.button:disabled{opacity:.5;cursor:not-allowed}
+.button:hover:not(:disabled){filter:brightness(1.06)}.button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #42b39e;outline-offset:2px}
+.field{margin:15px 0}.field label{display:block;font-size:12px;font-weight:800;color:#4a6371;margin-bottom:6px}
+.field input,.field textarea{font:inherit;width:100%;border:1px solid #cfdada;border-radius:10px;padding:13px;background:#fbfefd}.field textarea{resize:vertical;min-height:85px}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:#5c6c79}.check input{width:18px;height:18px;margin:3px 0}
+.hidden{display:none}.alert{border-radius:9px;padding:13px 15px;background:#fff0ed;color:#a23e36;font-size:14px;margin:17px 0}.ok{background:#e4f5e9;color:#166a4a}
+.meta{margin-top:23px;padding-top:17px;border-top:1px solid #e0e8e5;color:#687d83;font-size:12px}
+.pair{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.link{display:block;width:100%;padding:12px;background:#f5faf7;border:1px solid #cbdcd3;border-radius:10px;color:#21534c;overflow-wrap:anywhere;font-size:12px}
+footer{text-align:center;color:#789092;font-size:12px;padding:23px}
+@media(max-width:600px){main{padding-top:20px}.header,.content{padding:23px}.facts{grid-template-columns:1fr 1fr}.amount{align-items:flex-start;flex-direction:column}.amount strong{font-size:29px}.actions .button{flex:1}}
+@media print{.top,.actions,footer,#managePanel,#decisionPanel,.notice,.alert{display:none!important}body{background:white}.shell{width:100%}main{padding:0}.card{border:0;box-shadow:none}.header{color:#142c3b;background:white;padding:10px 0}.header .kicker,.header p{color:#335}.content{padding:12px 0}.amount{border:1px solid #777}.status{color:#222;background:white}}
+</style></head>
+<body><header class="top"><div class="shell"><a class="brand" href="/">BuildWorkflow<small>FIELDCHANGE / PRIVATE PACK</small></a></div></header>
+<main class="shell">
+<div class="card"><div class="header"><div class="kicker">Change order review</div><h1 id="headline">Loading your pack…</h1><p id="subhead">Private link · A written decision is only recorded after approval</p></div>
+<div class="content">
+<div id="error" class="alert hidden" role="alert"></div>
+<span id="state" class="status unpaid">Loading</span>
+<div class="facts" id="facts"></div>
+<section><h2>Proposed change</h2><div class="scope" id="scope"></div></section>
+<div class="amount"><div><label>Quoted additional work</label><div style="font-size:12px;color:#577569">CAD · before applicable taxes</div></div><strong id="total">—</strong></div>
+<section><h2>Notes and evidence</h2><p class="scope" id="notes"></p><p id="evidence" style="color:#607980;font-size:13px"></p></section>
+<div id="signature" class="meta hidden"></div>
+<div class="notice">The recipient confirms a written decision, name and time. This record is not identity verification, legal advice, or a substitute for confirming contractual authority. Check scope, contract terms and taxes before relying on approval.</div>
+<div class="actions"><button type="button" class="button secondary" id="print">Print / Save PDF</button><a class="button secondary" href="/tools/change-order-calculator">New change order</a></div>
+</div></div>
+<div class="card hidden" id="managePanel"><div class="content"><h2>Your contractor dashboard</h2><p>Save this private management link. Only you should share the separate customer approval link.</p>
+<div id="pendingPay"><p id="paymentInfo" style="color:#566e76">This pack must be paid before customer approval activates.</p><div class="actions"><a id="checkout" class="button hidden" href="#" rel="noopener noreferrer">Pay CA$9 securely with Stripe</a></div></div>
+<div id="readyShare" class="hidden"><p class="small">The pack is paid and ready for a customer decision. Share this link with the customer or GC reviewer.</p><div class="link" id="approvalLink"></div><div class="actions"><button id="copyLink" type="button" class="button">Copy customer approval link</button></div></div>
+</div></div>
+<div class="card hidden" id="decisionPanel"><div class="content"><h2>Record your decision</h2><p>Review the quoted scope and amount above before submitting. This decision is stored with your name and timestamp.</p>
+<form id="decisionForm">
+<div class="field"><label for="signedName">Your full name</label><input id="signedName" maxlength="120" autocomplete="name" required minlength="2" placeholder="Full name"></div>
+<div class="field"><label for="note">Review note (optional)</label><textarea id="note" maxlength="500" placeholder="Conditions, requested corrections or reason for rejection"></textarea></div>
+<label class="check"><input id="ack" type="checkbox" required><span>I have reviewed the described scope and amount and confirm that this is my own decision. I understand the decision will be recorded.</span></label>
+<div class="actions"><button type="button" class="button secondary" data-decision="declined">Decline this request</button><button type="button" class="button" data-decision="approved">Approve this change</button></div>
+<div id="decisionMessage" class="alert hidden" role="status"></div>
+</form></div></div>
+</main><footer>BuildWorkflow is operated by Noetfield Systems Inc. · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></footer>
+<script>
+(function(){
+const params=new URLSearchParams(location.search),id=params.get("order")||"",token=params.get("token")||"";
+const $=x=>document.getElementById(x),fmt=x=>new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(x);
+if(!/^[0-9a-f-]{36}$/i.test(id)||!token){$("error").textContent="This private link is incomplete or invalid.";$("error").classList.remove("hidden");$("state").textContent="Invalid link";return;}
+let current=null,kind="";
+const add=(title,value)=>{const box=document.createElement("div");box.className="fact";const a=document.createElement("span"),b=document.createElement("strong");a.textContent=title;b.textContent=value||"—";box.append(a,b);$("facts").append(box);};
+function render(d){
+  current=d;$("headline").textContent=d.project;$("scope").textContent=d.scope||"No scope provided.";$("notes").textContent=d.notes||"None recorded.";
+  $("evidence").textContent=d.evidence?.length?"Evidence marked available: "+d.evidence.join(", "):"Supporting evidence not marked in this pack.";
+  $("total").textContent=fmt(d.total);$("state").textContent=d.status==="draft"?"Not yet paid":d.status==="pending"?"Awaiting customer decision":d.status==="approved"?"Approved by reviewer":d.status==="declined"?"Declined by reviewer":d.status;
+  $("state").classList.toggle("unpaid",!d.paid);
+  $("facts").replaceChildren();add("Job / PO",d.jobNumber);add("Customer / GC",d.customer);add("Requested by",d.requestedBy);add("Reason",d.changeType);add("Observed",d.workDate);add("Schedule impact",String(d.scheduleDays||0)+" working days");
+  $("signature").classList.toggle("hidden",!d.signedAt);
+  if(d.signedAt)$("signature").textContent="Recorded decision: "+d.status+" · "+d.signedName+" · "+new Date(d.signedAt).toLocaleString()+" · Note: "+(d.signedNote||"None");
+  $("managePanel").classList.toggle("hidden",kind!=="manage");
+  $("decisionPanel").classList.toggle("hidden",kind!=="approve"||d.status!=="pending"||!d.paid);
+  if(kind==="manage"){
+    $("pendingPay").classList.toggle("hidden",!!d.paid);
+    $("readyShare").classList.toggle("hidden",!d.paid);
+    if(d.checkoutUrl){$("checkout").href=d.checkoutUrl;$("checkout").classList.remove("hidden");$("paymentInfo").textContent="Complete payment in Stripe Checkout. Return here to share the activation link. Your order activates from a verified Stripe webhook.";}
+    else {$("checkout").classList.add("hidden");$("paymentInfo").textContent="Online checkout is not active yet. Your draft is saved; no payment has been taken. Return later to complete activation.";}
+    if(d.approvalUrl){$("approvalLink").textContent=d.approvalUrl;$("copyLink").onclick=async()=>{try{await navigator.clipboard.writeText(d.approvalUrl);$("copyLink").textContent="Copied";}catch{$("copyLink").textContent="Select and copy the link above";}};}
+  }else if(!d.paid){$("error").textContent="This order is not yet activated for approval. Ask the contractor to complete the purchase.";$("error").classList.remove("hidden");}
+}
+async function load(){
+  try{const r=await fetch("/api/orders/"+id+"?token="+encodeURIComponent(token),{cache:"no-store"}),d=await r.json();if(!r.ok)throw Error(d.error||"Unable to open order.");
+  kind=d.manageUrl?"manage":"approve";render(d);
+  }catch(e){$("error").textContent=e.message;$("error").classList.remove("hidden");$("state").textContent="Unavailable";}
+}
+$("print").onclick=()=>window.print();
+document.querySelectorAll("[data-decision]").forEach(btn=>btn.addEventListener("click",async()=>{
+  if(!$("decisionForm").reportValidity())return;
+  const decision=btn.dataset.decision;if(!confirm("Record your final decision: "+decision+"? This cannot be edited."))return;
+  document.querySelectorAll("[data-decision]").forEach(x=>x.disabled=true);
+  try{
+    const res=await fetch("/api/orders/"+id+"/respond?token="+encodeURIComponent(token),{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({decision,signedName:$("signedName").value,note:$("note").value,acknowledged:$("ack").checked})});
+    const d=await res.json();if(!res.ok)throw Error(d.error||"Could not record decision.");await load();$("decisionPanel").classList.add("hidden");
+  }catch(e){$("decisionMessage").classList.remove("hidden");$("decisionMessage").textContent=e.message;}
+  finally{document.querySelectorAll("[data-decision]").forEach(x=>x.disabled=false);}
+}));
+load();
+})();
+</script></body></html>

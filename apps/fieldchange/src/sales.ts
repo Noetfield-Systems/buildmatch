@@ -89,7 +89,7 @@ function proofRecord(d:Data,kind:"interview"|"change",prev:Data={}) {
  if(!target_id)throw Error("A linked contractor target is required.");
  const legal=kind==="interview"?["planned","scheduled","completed","cancelled"]:["observed","priced","submitted","approved","invoice_ready","invoiced","lost"];
  if(!legal.includes(status))throw Error("Invalid workflow status.");
- const verified=d.verified===true;
+ const verified=d.verified===undefined?prev.verified===true:d.verified===true;
  if(verified && (!reference || evidence.length<15 || !(kind==="interview"?status==="completed":["approved","invoice_ready","invoiced"].includes(status))))
   throw Error("Verification requires an evidence reference, evidence notes (15+ chars) and a qualifying completed stage.");
  return {product_id:PRODUCT,target_id,status,evidence,reference,verified,
@@ -125,7 +125,7 @@ export async function handleSalesRoute(req:Request,db:Database,adminSecret:strin
  const privatePath=p.match(/^\/api\/assessments\/([0-9a-f-]{36})$/i);
  if(privatePath&&(m==="GET"||m==="PATCH")){
   const row=get(db,"SELECT * FROM bw_sales_assessments WHERE id=?",privatePath[1]),key=url.searchParams.get("token")||req.headers.get("x-assessment-token")||"";
-  if(!row||key.length<32||!safeEq(key,row.manage_hash) && hash(key)!==row.manage_hash)return err("Assessment link invalid or unavailable.",404);
+  if(!row||key.length<32||key.length>128||!timingSafeEqual(Buffer.from(hash(key),"hex"),Buffer.from(row.manage_hash,"hex")))return err("Assessment link invalid or unavailable.",404);
   const receipt=get(db,"SELECT * FROM bw_sales_receipts WHERE assessment_id=? AND product_id=?",row.id,PRODUCT);
   const task=get(db,"SELECT * FROM bw_sales_tasks WHERE assessment_id=? ORDER BY created_at LIMIT 1",row.id);
   if(m==="GET")return reply(assessmentView(row,receipt,task));
@@ -169,7 +169,7 @@ export async function handleSalesRoute(req:Request,db:Database,adminSecret:strin
   try{const d=await read(req),r=proofRecord(d,kind,row?JSON.parse(row.record_json):{status:kind==="interview"?"planned":"observed"});
    if(!get(db,"SELECT id FROM bw_sales_targets WHERE id=?",r.target_id))return err("Unknown target contractor.",422);
    const id=section[2]||randomUUID(),at=now();
-   db.transaction(()=>{if(row){db.query("UPDATE "+table+" SET target_id=?,record_json=?,status=?,verified=?,"+(kind==="interview"?"conducted_at=?":"updated_at=?")+",updated_at=? WHERE id=?").run(r.target_id,JSON.stringify(r),r.status,r.verified?1:0,kind==="interview"?r.conducted_at:at,at,id);}
+   db.transaction(()=>{if(row){if(kind==="interview")db.query("UPDATE bw_sales_interviews SET target_id=?,record_json=?,status=?,verified=?,conducted_at=?,updated_at=? WHERE id=?").run(r.target_id,JSON.stringify(r),r.status,r.verified?1:0,r.conducted_at,at,id);else db.query("UPDATE bw_sales_changes SET target_id=?,record_json=?,status=?,verified=?,updated_at=? WHERE id=?").run(r.target_id,JSON.stringify(r),r.status,r.verified?1:0,at,id);}
     else if(kind==="interview"){db.query("INSERT INTO bw_sales_interviews VALUES(?,?,?,?,?,?,?,?)").run(id,r.target_id,JSON.stringify(r),r.status,r.conducted_at,r.verified?1:0,at,at);}
     else {db.query("INSERT INTO bw_sales_changes VALUES(?,?,?,?,?,?,?)").run(id,r.target_id,JSON.stringify(r),r.status,r.verified?1:0,at,at);}
     audit(db,kind,id,row?"updated":"created",{status:r.status,verified:r.verified,reference:r.reference});

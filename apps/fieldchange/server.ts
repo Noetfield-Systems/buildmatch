@@ -3,6 +3,7 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { calculateChangeOrder } from "./src/pricing.ts";
+import { initOrders, handleOrderRoute, revenueFromOrders } from "./src/orders.ts";
 import { initSinaEventOutbox, enqueuePilotObserved, dispatchSinaEventOutbox } from "./src/sina-org-events.ts";
 
 const port = Number(process.env.PORT || 8080);
@@ -17,6 +18,7 @@ const insertLead = db.query("INSERT INTO pilot_requests (id,company,contact_name
 const recentLeads = db.query("SELECT id,company,contact_name,trade,email,phone,monthly_volume,current_process,problem,status,created_at FROM pilot_requests ORDER BY created_at DESC LIMIT 200");
 const removeLead = db.query("DELETE FROM pilot_requests WHERE id = ?");
 initSinaEventOutbox(db);
+initOrders(db);
 let sinaOutboxSending = false;
 async function pumpSinaOutbox(): Promise<void> {
   if (sinaOutboxSending) return;
@@ -90,6 +92,7 @@ function revenueSummary() {
     latest_request_at: last.last,
     contracted_value: { state: "NOT_TRACKED" },
     collected_revenue: { state: "NOT_TRACKED" },
+    commercial: revenueFromOrders(db),
     privacy: { personal_data_returned: false, customer_records_returned: false }
   };
 }
@@ -99,6 +102,26 @@ Bun.serve({
   port,
   async fetch(req) {
     const url = new URL(req.url), path = url.pathname;
+    const orderResult = await handleOrderRoute(req, db);
+    if (orderResult) return orderResult;
+    if (req.method === "GET" && (path === "/tools/change-order-calculator" || path === "/change-order-calculator" || path === "/calculator"))
+      return new Response(Bun.file("public/calculator.html"), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+    if (req.method === "GET" && path === "/order")
+      return new Response(Bun.file("public/order.html"), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "no-referrer" } });
+    if (req.method === "GET" && path === "/terms")
+      return new Response(Bun.file("public/terms.html"), { headers: { "content-type": "text/html; charset=utf-8" } });
+    if (req.method === "GET" && path === "/robots.txt")
+      return new Response("User-agent: *\nAllow: /\nDisallow: /order\nDisallow: /admin\nDisallow: /api/\nSitemap: https://buildworkflow.ca/sitemap.xml\n", { headers: { "content-type": "text/plain; charset=utf-8" } });
+    if (req.method === "GET" && path === "/sitemap.xml") {
+      const base = "https://buildworkflow.ca";
+      const urls = ["/", "/tools/change-order-calculator", "/hvac-extra-work-ticket", "/electrical-change-order", "/time-and-material-ticket", "/change-order-approval"];
+      return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls.map(p => "<url><loc>" + base + p + "</loc></url>").join("") + "</urlset>", { headers: { "content-type": "application/xml; charset=utf-8" } });
+    }
+    const segment = ({"/hvac-extra-work-ticket":["HVAC Extra Work Ticket","Document duct, rooftop and mechanical changes before they become unbilled hours."],"/electrical-change-order":["Electrical Change Order","Capture added circuits, wiring revisions and out-of-scope installation work."],"/time-and-material-ticket":["Time & Material Ticket","Record labour, materials, equipment and supporting field evidence on one ticket."],"/change-order-approval":["Change Order Approval","Prepare a priced, shareable change request for written review and decision."]} as Record<string,string[]>)[path];
+    if (req.method === "GET" && segment) {
+      const template = await Bun.file("public/segment.html").text();
+      return new Response(template.replaceAll("{{TITLE}}", segment[0]).replaceAll("{{DESCRIPTION}}", segment[1]).replaceAll("{{URL}}", path), { headers: { "content-type": "text/html; charset=utf-8" } });
+    }
     if (req.method === "GET" && (path === "/" || path === "/index.html"))
       return new Response(Bun.file("public/index.html"), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
     if (req.method === "GET" && path === "/admin")

@@ -45,6 +45,12 @@ export function initOrders(db: Database) {
   db.exec("CREATE INDEX IF NOT EXISTS change_orders_created ON change_orders(created_at DESC)");
 }
 
+/** Look up a private order without exposing raw tokens or internal record data. */
+export function orderAccess(db: Database, id: string, supplied: string) {
+  const row = getOrder(db, id);
+  if (!row) return null;
+  return { role: permit(row, supplied), paid: row.paid === 1, status: row.status };
+}
 function getOrder(db: Database, id: string): Row | null {
   return (db.query("SELECT * FROM change_orders WHERE id = ?").get(id) as Row | null) || null;
 }
@@ -70,6 +76,7 @@ function publicView(row: Row, role: "manage" | "approve", url: URL, accessToken:
   };
   if (role === "manage") {
     const approveToken = unseal(row.approve_secret);
+    view.customerEmail = data.customerEmail || "";
     view.cost = priced.loadedCost;
     view.marginPct = priced.achievedMarginPct;
     view.manageUrl = base + "/order?order=" + row.id + "&token=" + encodeURIComponent(accessToken);
@@ -113,6 +120,7 @@ function parseOrder(data: Row) {
       project, scope, jobNumber: tidy(data.jobNumber, 80), customer: tidy(data.customer, 120),
       requestedBy: tidy(data.requestedBy, 120), trade: tidy(data.trade, 60),
       changeType: tidy(data.changeType, 120), workDate: tidy(data.workDate, 20),
+      customerEmail: mail(data.customerEmail),
       scheduleDays, notes: tidy(data.notes, 1200), evidence
     }
   };
@@ -190,6 +198,30 @@ export async function handleOrderRoute(req: Request, db: Database): Promise<Resp
       const manageUrl = url.origin + "/order?order=" + id + "&token=" + encodeURIComponent(manageToken);
       return response({ id, status: "draft", approvalUrl, manageUrl, checkoutUrl: getCheckoutUrl(id), amountCAD: 9, currency: "CAD", note: "Approval activates only after a verified payment webhook." }, 201);
     } catch (e) { return failure(e instanceof Error ? e.message : "Could not create order."); }
+  }
+  const invoiceMatch = path.match(/^\/api\/orders\/([0-9a-f-]{36})\/invoice\.csv$/);
+  if (req.method === "GET" && invoiceMatch) {
+    const row = getOrder(db, invoiceMatch[1]);
+    if (!row || permit(row, url.searchParams.get("token") || "") !== "manage") return failure("Private contractor link required.", 403);
+    if (row.paid !== 1 || row.status !== "approved") return failure("Invoice handoff is available after a paid customer approval.", 409);
+    const d = JSON.parse(row.record_json), price = JSON.parse(row.pricing_json);
+    const cell = (v: unknown) => {
+      let s = String(v ?? "").replace(/[\r\n]+/g, " ").slice(0, 2000);
+      if (/^[\t\s]*[=+@-]/.test(s)) s = "'" + s;
+      return '"' + s.replace(/"/g, '""') + '"';
+    };
+    const fields = [
+      ["Document type","Invoice-ready approved change order (NOT a tax invoice)"],
+      ["Change order ID",row.id],["Project",d.project],["Job / PO",d.jobNumber],
+      ["Customer",d.customer],["Customer contact",d.customerEmail],["Change scope",d.scope],
+      ["Schedule impact, working days",d.scheduleDays],["Currency","CAD"],["Additional work sell price, before tax",price.recommendedPrice],
+      ["Approval status",row.status],["Approved by",row.signed_name],["Approved at UTC",row.signed_at],
+      ["Review note",row.signed_note],["Tax treatment","Not calculated; verify applicable taxes before invoicing"]
+    ];
+    return new Response("Field,Value\r\n" + fields.map(pair => pair.map(cell).join(",")).join("\r\n") + "\r\n", {
+      headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": 'attachment; filename="fieldchange-invoice-handoff.csv"',
+        "cache-control": "private, no-store", "referrer-policy": "no-referrer", "x-content-type-options": "nosniff" }
+    });
   }
   const m = path.match(/^\/api\/orders\/([0-9a-f-]{36})(\/respond)?$/);
   if (m) {

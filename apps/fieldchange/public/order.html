@@ -19,6 +19,17 @@ h2{font-size:21px;letter-spacing:-.035em;margin:10px 0}.scope{white-space:pre-wr
 footer{text-align:center;color:#789092;font-size:12px;padding:23px}
 @media(max-width:600px){main{padding-top:20px}.header,.content{padding:23px}.facts{grid-template-columns:1fr 1fr}.amount{align-items:flex-start;flex-direction:column}.amount strong{font-size:29px}.actions .button{flex:1}}
 @media print{.top,.actions,footer,#managePanel,#decisionPanel,.notice,.alert{display:none!important}body{background:white}.shell{width:100%}main{padding:0}.card{border:0;box-shadow:none}.header{color:#142c3b;background:white;padding:10px 0}.header .kicker,.header p{color:#335}.content{padding:12px 0}.amount{border:1px solid #777}.status{color:#222;background:white}}
+
+.evidenceGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.evidenceGrid a{display:block;aspect-ratio:1.4;border-radius:12px;overflow:hidden;background:#e9f2ec;border:1px solid #d8e4dc}
+.evidenceGrid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.evidenceGrid a:hover img{transform:scale(1.04)}
+.eventPanel{border-top:1px solid #e3eae5;background:#f9fbf9}.eventPanel h2{margin-top:0}
+.eventHistory{padding:0 0 0 24px;margin:16px 0}.eventHistory li{padding:10px 0 12px;border-bottom:1px solid #e0ebe5}
+.eventHistory b{font-size:14px;display:block;color:#244b44}.eventHistory time{font-size:12px;color:#738782}
+.small{font-size:13px;color:#657c78}.actions{margin-bottom:14px}.button{min-height:46px;font-size:14px}
+@media(max-width:600px){.evidenceGrid{grid-template-columns:repeat(2,1fr)}.facts{grid-template-columns:1fr 1fr}.content{padding:22px}.actions .button{flex:1 1 100%}}
+@media print{.evidenceGrid{grid-template-columns:repeat(3,1fr)}.evidenceGrid a{break-inside:avoid}.eventPanel{display:none!important}}
 </style></head>
 <body><header class="top"><div class="shell"><a class="brand" href="/">BuildWorkflow<small>FIELDCHANGE / PRIVATE PACK</small></a></div></header>
 <main class="shell">
@@ -29,15 +40,15 @@ footer{text-align:center;color:#789092;font-size:12px;padding:23px}
 <div class="facts" id="facts"></div>
 <section><h2>Proposed change</h2><div class="scope" id="scope"></div></section>
 <div class="amount"><div><label>Quoted additional work</label><div style="font-size:12px;color:#577569">CAD · before applicable taxes</div></div><strong id="total">—</strong></div>
-<section><h2>Notes and evidence</h2><p class="scope" id="notes"></p><p id="evidence" style="color:#607980;font-size:13px"></p></section>
+<section><h2>Notes and evidence</h2><p class="scope" id="notes"></p><p id="evidence" style="color:#607980;font-size:13px"></p><div id="evidenceGrid" class="evidenceGrid" aria-label="Attached project photos"></div><p class="small" id="evidenceEmpty">Loading site photos…</p></section>
 <div id="signature" class="meta hidden"></div>
 <div class="notice">The recipient confirms a written decision, name and time. This record is not identity verification, legal advice, or a substitute for confirming contractual authority. Check scope, contract terms and taxes before relying on approval.</div>
 <div class="actions"><button type="button" class="button secondary" id="print">Print / Save PDF</button><a class="button secondary" href="/tools/change-order-calculator">New change order</a></div>
 </div></div>
-<div class="card hidden" id="managePanel"><div class="content"><h2>Your contractor dashboard</h2><p>Save this private management link. Only you should share the separate customer approval link.</p>
+<div class="card hidden" id="managePanel"><div class="content"><h2>Your contractor dashboard</h2><p>Save this private management link. Only you should share the separate customer approval link.</p><div class="actions"><a class="button secondary" href="/workspace">← My saved packs</a><button class="button secondary" type="button" id="refreshState">Refresh payment / approval status</button><a class="button secondary hidden" id="invoiceHandoff" href="#">Export invoice-ready CSV</a></div>
 <div id="pendingPay"><p id="paymentInfo" style="color:#566e76">This pack must be paid before customer approval activates.</p><div class="actions"><a id="checkout" class="button hidden" href="#" rel="noopener noreferrer">Pay CA$9 securely with Stripe</a></div></div>
-<div id="readyShare" class="hidden"><p class="small">The pack is paid and ready for a customer decision. Share this link with the customer or GC reviewer.</p><div class="link" id="approvalLink"></div><div class="actions"><button id="copyLink" type="button" class="button">Copy customer approval link</button></div></div>
-</div></div>
+<div id="readyShare" class="hidden"><p class="small">The pack is paid and ready for a customer decision. Share this link with the customer or GC reviewer.</p><div class="link" id="approvalLink"></div><div class="actions"><button id="copyLink" type="button" class="button">Copy customer approval link</button><a id="emailApproval" class="button secondary" href="#">Email approval request</a><button id="shareApproval" type="button" class="button secondary">Share from phone</button></div></div>
+<div class="content eventPanel" id="eventPanel"><h2>Approval &amp; evidence history</h2><p class="small">Recorded events are available on your private contractor link.</p><ol id="eventHistory" class="eventHistory"><li>Loading activity…</li></ol></div></div>
 <div class="card hidden" id="decisionPanel"><div class="content"><h2>Record your decision</h2><p>Review the quoted scope and amount above before submitting. This decision is stored with your name and timestamp.</p>
 <form id="decisionForm">
 <div class="field"><label for="signedName">Your full name</label><input id="signedName" maxlength="120" autocomplete="name" required minlength="2" placeholder="Full name"></div>
@@ -67,16 +78,53 @@ function render(d){
   if(kind==="manage"){
     $("pendingPay").classList.toggle("hidden",!!d.paid);
     $("readyShare").classList.toggle("hidden",!d.paid);
+    $("invoiceHandoff").classList.toggle("hidden",!(d.paid&&d.status==="approved"));
+    if(d.paid&&d.status==="approved")$("invoiceHandoff").href="/api/orders/"+id+"/invoice.csv?token="+encodeURIComponent(token);
     if(d.checkoutUrl){$("checkout").href=d.checkoutUrl;$("checkout").classList.remove("hidden");$("paymentInfo").textContent="Complete payment in Stripe Checkout. Return here to share the activation link. Your order activates from a verified Stripe webhook.";}
     else {$("checkout").classList.add("hidden");$("paymentInfo").textContent="Online checkout is not active yet. Your draft is saved; no payment has been taken. Return later to complete activation.";}
-    if(d.approvalUrl){$("approvalLink").textContent=d.approvalUrl;$("copyLink").onclick=async()=>{try{await navigator.clipboard.writeText(d.approvalUrl);$("copyLink").textContent="Copied";}catch{$("copyLink").textContent="Select and copy the link above";}};}
+    if(d.approvalUrl){
+      $("approvalLink").textContent=d.approvalUrl;
+      $("copyLink").onclick=async()=>{try{await navigator.clipboard.writeText(d.approvalUrl);$("copyLink").textContent="Copied";}catch{$("copyLink").textContent="Select and copy the link above";}};
+      const subj="Change order approval requested: "+d.project;
+      const body="Please review the proposed additional work and record your decision at this private link:\n"+d.approvalUrl+"\n\nAmount: "+fmt(d.total)+" CAD before applicable taxes.\n\nRegards";
+      $("emailApproval").href="mailto:"+encodeURIComponent(d.customerEmail||"")+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body);
+      $("shareApproval").onclick=async()=>{if(navigator.share){try{await navigator.share({title:subj,text:"Review the proposed change order",url:d.approvalUrl});}catch{}}else{$("copyLink").click();}};
+    }
   }else if(!d.paid){$("error").textContent="This order is not yet activated for approval. Ask the contractor to complete the purchase.";$("error").classList.remove("hidden");}
 }
 async function load(){
   try{const r=await fetch("/api/orders/"+id+"?token="+encodeURIComponent(token),{cache:"no-store"}),d=await r.json();if(!r.ok)throw Error(d.error||"Unable to open order.");
-  kind=d.manageUrl?"manage":"approve";render(d);
+  kind=d.manageUrl?"manage":"approve";render(d);void loadEvidence();if(kind==="manage")void loadHistory();
   }catch(e){$("error").textContent=e.message;$("error").classList.remove("hidden");$("state").textContent="Unavailable";}
 }
+async function loadEvidence(){
+ try{
+   const r=await fetch("/api/orders/"+id+"/attachments?token="+encodeURIComponent(token),{cache:"no-store"});
+   const d=await r.json();if(!r.ok)throw Error(d.error||"Photo records unavailable.");
+   const gallery=$("evidenceGrid");gallery.replaceChildren();
+   $("evidenceEmpty").textContent=d.attachments.length?"Attached site photos · private record":"No site photos attached to this change order.";
+   for(const item of d.attachments){
+     const a=document.createElement("a");a.href="/api/orders/"+id+"/attachments/"+item.id+"?token="+encodeURIComponent(token);a.target="_blank";a.rel="noopener noreferrer";
+     const img=document.createElement("img");img.src=a.href;img.alt=item.filename;img.loading="lazy";
+     a.append(img);gallery.append(a);
+   }
+ }catch(e){$("evidenceEmpty").textContent=e.message||"Photos unavailable.";}
+}
+async function loadHistory(){
+ try{
+   const r=await fetch("/api/orders/"+id+"/history?token="+encodeURIComponent(token),{cache:"no-store"});
+   const data=await r.json();if(!r.ok)throw Error(data.error||"History unavailable.");
+   const labels={created:"Pack created",photo_added:"Site photo attached",payment_confirmed:"Verified Stripe payment",payment_refunded:"Payment refunded",approved:"Customer approved",declined:"Customer declined"};
+   const box=$("eventHistory");box.replaceChildren();
+   for(const item of data.events){
+     const li=document.createElement("li"),name=document.createElement("b"),time=document.createElement("time");
+     name.textContent=labels[item.event_type]||item.event_type.replace(/_/g," ");
+     time.textContent=new Date(item.occurred_at).toLocaleString();
+     li.append(name,time);box.append(li);
+   }
+ }catch(e){$("eventHistory").textContent=e.message||"History unavailable.";}
+}
+$("refreshState").onclick=load;
 $("print").onclick=()=>window.print();
 document.querySelectorAll("[data-decision]").forEach(btn=>btn.addEventListener("click",async()=>{
   if(!$("decisionForm").reportValidity())return;

@@ -4,6 +4,7 @@ import { dirname } from "node:path";
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { calculateChangeOrder } from "./src/pricing.ts";
 import { initOrders, handleOrderRoute, revenueFromOrders } from "./src/orders.ts";
+import { initSales, handleSalesRoute } from "./src/sales.ts";
 import { canonicalRedirect } from "./src/canonical.ts";
 import { initSinaEventOutbox, enqueuePilotObserved, dispatchSinaEventOutbox } from "./src/sina-org-events.ts";
 
@@ -20,6 +21,7 @@ const recentLeads = db.query("SELECT id,company,contact_name,trade,email,phone,m
 const removeLead = db.query("DELETE FROM pilot_requests WHERE id = ?");
 initSinaEventOutbox(db);
 initOrders(db);
+initSales(db);
 let sinaOutboxSending = false;
 async function pumpSinaOutbox(): Promise<void> {
   if (sinaOutboxSending) return;
@@ -105,6 +107,8 @@ Bun.serve({
     const url = new URL(req.url), path = url.pathname;
     const canonical = canonicalRedirect(req.method, req.headers.get("host") || url.host, req.url);
     if (canonical) return Response.redirect(canonical, 308);
+    const salesResult = await handleSalesRoute(req, db, adminToken);
+    if (salesResult) return salesResult;
     const orderResult = await handleOrderRoute(req, db);
     if (orderResult) return orderResult;
     if (req.method === "GET" && (path === "/tools/change-order-calculator" || path === "/change-order-calculator" || path === "/calculator"))
@@ -117,10 +121,10 @@ Bun.serve({
       return new Response("User-agent: *\nAllow: /\nDisallow: /order\nDisallow: /admin\nDisallow: /api/\nSitemap: https://buildworkflow.ca/sitemap.xml\n", { headers: { "content-type": "text/plain; charset=utf-8" } });
     if (req.method === "GET" && path === "/sitemap.xml") {
       const base = "https://buildworkflow.ca";
-      const urls = ["/", "/tools/change-order-calculator", "/hvac-extra-work-ticket", "/electrical-change-order", "/time-and-material-ticket", "/change-order-approval"];
+      const urls = ["/", "/tools/change-order-calculator", "/hvac-extra-work-ticket", "/plumbing-change-order", "/electrical-change-order", "/time-and-material-ticket", "/change-order-approval"];
       return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls.map(p => "<url><loc>" + base + p + "</loc></url>").join("") + "</urlset>", { headers: { "content-type": "application/xml; charset=utf-8" } });
     }
-    const segment = ({"/hvac-extra-work-ticket":["HVAC Extra Work Ticket","Document duct, rooftop and mechanical changes before they become unbilled hours."],"/electrical-change-order":["Electrical Change Order","Capture added circuits, wiring revisions and out-of-scope installation work."],"/time-and-material-ticket":["Time & Material Ticket","Record labour, materials, equipment and supporting field evidence on one ticket."],"/change-order-approval":["Change Order Approval","Prepare a priced, shareable change request for written review and decision."]} as Record<string,string[]>)[path];
+    const segment = ({"/hvac-extra-work-ticket":["HVAC Extra Work Ticket","Document duct, rooftop and mechanical changes before they become unbilled hours."],"/plumbing-change-order":["Plumbing Change Order","Track unexpected site conditions, added piping, labour and documented GC approval."],"/electrical-change-order":["Electrical Change Order","Capture added circuits, wiring revisions and out-of-scope installation work."],"/time-and-material-ticket":["Time & Material Ticket","Record labour, materials, equipment and supporting field evidence on one ticket."],"/change-order-approval":["Change Order Approval","Prepare a priced, shareable change request for written review and decision."]} as Record<string,string[]>)[path];
     if (req.method === "GET" && segment) {
       const template = await Bun.file("public/segment.html").text();
       return new Response(template.replaceAll("{{TITLE}}", segment[0]).replaceAll("{{DESCRIPTION}}", segment[1]).replaceAll("{{URL}}", path), { headers: { "content-type": "text/html; charset=utf-8" } });

@@ -1,11 +1,11 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, unlinkSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import { randomUUID } from "node:crypto";
 import { orderAccess } from "./orders.ts";
 
 /** Private, immutable evidence gallery on the existing Railway persistent volume. */
-const ROOT = process.env.FIELDCHANGE_EVIDENCE_DIR || "/data/fieldchange-evidence";
+const ROOT = process.env.FIELDCHANGE_EVIDENCE_DIR || join(dirname(process.env.DATABASE_PATH || "/tmp/fieldchange.sqlite"), "fieldchange-evidence");
 const MAX_UPLOAD = 3_000_000;
 const MAX_BODY = 3_500_000;
 const MAX_FILES = 8;

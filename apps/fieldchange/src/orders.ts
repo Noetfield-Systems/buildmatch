@@ -24,6 +24,16 @@ function unseal(s: string) {
 const tidy = (v: unknown, max = 400) => String(v ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, max);
 const mail = (v: unknown) => tidy(v, 254).toLowerCase();
 const money = (v: unknown) => Number(v ?? 0);
+const orderRates = new Map<string, { count: number; expires: number }>();
+function allowOrder(req: Request) {
+  const client = hash((req.headers.get("x-forwarded-for") || "unknown").split(",")[0]);
+  const now = Date.now();
+  const current = orderRates.get(client);
+  const next = !current || current.expires < now ? { count: 1, expires: now + 30 * 60 * 1000 } : { count: current.count + 1, expires: current.expires };
+  orderRates.set(client, next);
+  if (orderRates.size > 10000) orderRates.clear();
+  return next.count <= 15;
+}
 const headers = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff", "x-frame-options": "DENY", "referrer-policy": "no-referrer" };
 const response = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers });
 const failure = (message: string, status = 400) => response({ error: message }, status);
@@ -133,9 +143,10 @@ async function webhook(req: Request, db: Database) {
       if (!added.changes) return;
       if ((type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded")
         && obj.payment_status === "paid" && typeof obj.client_reference_id === "string"
+        && Boolean(process.env.STRIPE_PACK_PAYMENT_LINK_ID)
         && obj.payment_link === process.env.STRIPE_PACK_PAYMENT_LINK_ID
-        && String(obj.currency).toLowerCase() === "cad" && money(obj.amount_subtotal) === 900) {
-        const updated = db.query("UPDATE change_orders SET paid = 1, status = CASE WHEN status = 'draft' THEN 'pending' ELSE status END, paid_at = COALESCE(paid_at, ?), payment_session = ?, payment_intent = ? WHERE id = ? AND paid = 0")
+        && String(obj.currency).toLowerCase() === "cad" && money(obj.amount_subtotal) === 900 && money(obj.amount_total) >= 900) {
+        const updated = db.query("UPDATE change_orders SET paid = 1, status = CASE WHEN status IN ('draft','refunded') THEN 'pending' ELSE status END, paid_at = COALESCE(paid_at, ?), payment_session = ?, payment_intent = ? WHERE id = ? AND paid = 0")
           .run(new Date().toISOString(), tidy(obj.id, 120), tidy(obj.payment_intent, 120), obj.client_reference_id);
         if (updated.changes) recordEvent(db, obj.client_reference_id, "payment_confirmed", "stripe", tidy(obj.id, 120));
       }
@@ -165,6 +176,7 @@ export async function handleOrderRoute(req: Request, db: Database): Promise<Resp
     return response({ approval_workflow: true, checkout_configured: Boolean(getCheckoutUrl("sample")), webhook_configured: Boolean(process.env.STRIPE_WEBHOOK_SECRET), currency: "CAD", pack_price_cents: 900 });
   if (req.method === "POST" && path === "/api/stripe/webhook") return webhook(req, db);
   if (req.method === "POST" && path === "/api/orders") {
+    if (!allowOrder(req)) return failure("Too many new packs. Try again later.", 429);
     try {
       const payload = await body(req);
       const { record, priced } = parseOrder(payload);

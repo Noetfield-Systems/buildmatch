@@ -1,11 +1,26 @@
 import { Database } from "bun:sqlite";
-import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, createCipheriv, createDecipheriv, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { calculateChangeOrder } from "./pricing.ts";
 
 type Row = Record<string, any>;
 
 const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 const token = () => randomBytes(32).toString("base64url");
+function secretKey() {
+  const s = process.env.ORDER_LINK_SECRET || process.env.ADMIN_TOKEN || "";
+  if (s.length < 24) throw new Error("ORDER_LINK_SECRET or ADMIN_TOKEN must contain at least 24 characters.");
+  return createHash("sha256").update("buildworkflow-approval-v1:" + s).digest();
+}
+function seal(s: string) {
+  const nonce = randomBytes(12), cipher = createCipheriv("aes-256-gcm", secretKey(), nonce);
+  const encrypted = Buffer.concat([cipher.update(s, "utf8"), cipher.final()]);
+  return Buffer.concat([nonce, cipher.getAuthTag(), encrypted]).toString("base64url");
+}
+function unseal(s: string) {
+  const b = Buffer.from(s, "base64url"), decipher = createDecipheriv("aes-256-gcm", secretKey(), b.subarray(0, 12));
+  decipher.setAuthTag(b.subarray(12, 28));
+  return Buffer.concat([decipher.update(b.subarray(28)), decipher.final()]).toString("utf8");
+}
 const tidy = (v: unknown, max = 400) => String(v ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, max);
 const mail = (v: unknown) => tidy(v, 254).toLowerCase();
 const money = (v: unknown) => Number(v ?? 0);
@@ -14,7 +29,7 @@ const response = (data: unknown, status = 200) => new Response(JSON.stringify(da
 const failure = (message: string, status = 400) => response({ error: message }, status);
 
 export function initOrders(db: Database) {
-  db.exec("CREATE TABLE IF NOT EXISTS change_orders (id TEXT PRIMARY KEY, manage_hash TEXT NOT NULL, approve_hash TEXT NOT NULL, record_json TEXT NOT NULL, pricing_json TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'draft', paid INTEGER NOT NULL DEFAULT 0, paid_at TEXT, payment_session TEXT, payment_intent TEXT, signed_name TEXT, signed_note TEXT, signed_at TEXT, created_at TEXT NOT NULL)");
+  db.exec("CREATE TABLE IF NOT EXISTS change_orders (id TEXT PRIMARY KEY, manage_hash TEXT NOT NULL, approve_hash TEXT NOT NULL, approve_secret TEXT NOT NULL, record_json TEXT NOT NULL, pricing_json TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'draft', paid INTEGER NOT NULL DEFAULT 0, paid_at TEXT, payment_session TEXT, payment_intent TEXT, signed_name TEXT, signed_note TEXT, signed_at TEXT, created_at TEXT NOT NULL)");
   db.exec("CREATE TABLE IF NOT EXISTS change_order_events (id TEXT PRIMARY KEY, order_id TEXT NOT NULL, event_type TEXT NOT NULL, actor TEXT NOT NULL, detail TEXT NOT NULL DEFAULT '', occurred_at TEXT NOT NULL)");
   db.exec("CREATE TABLE IF NOT EXISTS fieldchange_stripe_events (event_id TEXT PRIMARY KEY, event_type TEXT NOT NULL, received_at TEXT NOT NULL)");
   db.exec("CREATE INDEX IF NOT EXISTS change_orders_created ON change_orders(created_at DESC)");
@@ -44,14 +59,12 @@ function publicView(row: Row, role: "manage" | "approve", url: URL, accessToken:
     signedName: row.signed_name, signedNote: row.signed_note, signedAt: row.signed_at
   };
   if (role === "manage") {
-    const approve = data.approveToken; // never stored in record; replaced below
-    void approve;
+    const approveToken = unseal(row.approve_secret);
     view.cost = priced.loadedCost;
     view.marginPct = priced.achievedMarginPct;
     view.manageUrl = base + "/order?order=" + row.id + "&token=" + encodeURIComponent(accessToken);
     if (row.paid === 1) {
-      // Approval token is separately stored in browser at initial creation; it is not recoverable from the hash.
-      view.approvalInstructions = "Copy the approval link created with your order. It stays in your browser's saved draft.";
+      view.approvalUrl = base + "/order?order=" + row.id + "&token=" + encodeURIComponent(approveToken);
     } else {
       view.checkoutUrl = getCheckoutUrl(row.id);
     }
@@ -157,8 +170,8 @@ export async function handleOrderRoute(req: Request, db: Database): Promise<Resp
       const { record, priced } = parseOrder(payload);
       const id = randomUUID(), manageToken = token(), approveToken = token(), now = new Date().toISOString();
       db.transaction(() => {
-        db.query("INSERT INTO change_orders (id,manage_hash,approve_hash,record_json,pricing_json,created_at) VALUES (?,?,?,?,?,?)")
-          .run(id, hash(manageToken), hash(approveToken), JSON.stringify(record), JSON.stringify(priced), now);
+        db.query("INSERT INTO change_orders (id,manage_hash,approve_hash,approve_secret,record_json,pricing_json,created_at) VALUES (?,?,?,?,?,?,?)")
+          .run(id, hash(manageToken), hash(approveToken), seal(approveToken), JSON.stringify(record), JSON.stringify(priced), now);
         recordEvent(db, id, "created", "contractor");
       })();
       const approvalUrl = url.origin + "/order?order=" + id + "&token=" + encodeURIComponent(approveToken);

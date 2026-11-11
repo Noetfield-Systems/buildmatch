@@ -17,30 +17,72 @@
 .btn.teal{background:#067d76;border-color:#067d76}.field label{font-size:12px}.field input,.field textarea,.field select{font-size:14px;padding:12px}
 .head h2{font-size:28px}.price{font-size:48px}
 @media(max-width:560px){.hero h1{font-size:37px}.btns .btn{flex:1 1 44%}.price{font-size:40px}}
+
+/* FieldChange Pro: mobile-first progressive field workflow */
+:root{--ink:#102a36;--teal:#087f70;--paper:#f4f7f5;--line:#d9e4de}
+body{font-size:15px;line-height:1.58}.shell{max-width:1280px}
+.heroMain{background:radial-gradient(circle at 92% 10%,#237464,transparent 43%),linear-gradient(132deg,#071b29,#123b40);padding:40px}
+.heroSide{border-radius:19px}.flowProgress{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:19px 0}
+.flowTab{background:white;border:1px solid var(--line);border-radius:14px;text-align:left;padding:18px 20px;display:grid;gap:3px;color:var(--ink);cursor:pointer}
+.flowTab.active{border:2px solid #087f70;background:#ebf8f2;box-shadow:0 12px 28px #0a756c1a}
+.flowTab span{font-size:12px;color:#087f70;font-weight:900}.flowTab b{font-size:16px}.flowTab small{color:#5f7481;font-size:12px}
+.wizardStep{display:none}.wizardStep.active{display:block}
+#changeForm .grid{gap:17px}#changeForm .field label{font-size:13px;font-weight:750;color:#344d56}
+#changeForm .field input,#changeForm .field textarea,#changeForm .field select{font-size:16px;min-height:48px;border-radius:11px;background:#fff}
+#changeForm .field textarea{min-height:120px}#changeForm .checks{gap:12px}
+.check{font-size:13px;align-items:center;padding:13px;border-radius:11px}#changeForm .body{padding:24px}
+#changeForm .sub{font-size:13px;margin:2px 0 22px}
+.wizardActions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.wizardActions .btn{font-size:14px;min-height:46px}.wizardHint{font-size:13px;color:#637b7c;text-align:center}
+.wizardStep .btns{margin-top:25px}
+.photoPanel{background:#f0f8f4;border:1px dashed #9dcab9;padding:20px;border-radius:16px;margin:24px 0}
+.photoTitle{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.photoTitle b{font-size:16px}.photoTitle p{color:#526d66;font-size:13px;margin:6px 0 16px}
+.uploadLabel{display:inline-block;background:#126f65;color:#fff;font-weight:750;border-radius:10px;padding:13px 17px;cursor:pointer}
+#sitePhotos{position:absolute;width:1px;height:1px;opacity:0}.photoPreview{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:15px}
+.photoPreview img{width:100%;aspect-ratio:1.35;object-fit:cover;border-radius:9px;background:#ddd}
+#photoInfo{font-size:13px;margin-top:12px}.reviewPanel{background:linear-gradient(135deg,#eff8f2,#fff);border:1px solid var(--line);border-radius:15px;padding:23px}
+.reviewPanel h3{font-size:24px;margin:13px 0}.reviewPanel>p{color:#59716c;font-size:14px}
+.reviewLine{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:12px 0;border-top:1px solid var(--line);font-size:14px}
+.reviewLine span{color:#647b78}.reviewLine strong{max-width:60%;text-align:right;overflow-wrap:anywhere}
+.result .resultLabel,.result .metric span{font-size:12px}.result .line{font-size:13px}.result .guard{font-size:13px}
+.result .price{font-size:clamp(36px,4vw,52px)}.result .status{font-size:11px}.result .muted{font-size:12px}
+@media(max-width:1000px){.hero{grid-template-columns:1fr}.flowProgress{gap:7px}.flowTab{padding:12px}.flowTab b{font-size:13px}.flowTab small{display:none}}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.result{position:relative;top:auto}.flowProgress{grid-template-columns:repeat(4,1fr)}.flowTab{padding:11px 7px;border-radius:10px;text-align:center}.flowTab span{font-size:11px}.flowTab b{font-size:12px}.wizardActions{flex-wrap:wrap}.wizardHint{order:-1;flex-basis:100%}.photoPreview{grid-template-columns:repeat(2,1fr)}.heroSide{display:none}#changeForm .body{padding:18px}}
+@media(max-width:560px){.grid,.grid.three{grid-template-columns:1fr}#changeForm .field.full{grid-column:auto}.shell{padding:15px 12px 40px}.heroMain{padding:28px 22px}.hero h1{font-size:35px}.flowTab b{font-size:11px}.flowTab span{font-size:10px}.reviewLine{font-size:13px}}
+
 </style></head>
 <body>
-<header class="top"><div class="topin"><div class="brand"><span class="mark">BW</span><span>BuildWorkflow<small>FIELDCHANGE DESK</small></span></div><nav class="nav"><a href="/">Home</a><a href="#desk">Calculator</a><a href="#process">Workflow</a><a href="#pilot" class="cta">For teams</a></nav></div></header>
+<header class="top"><div class="topin"><div class="brand"><span class="mark">BW</span><span>BuildWorkflow<small>FIELDCHANGE DESK</small></span></div><nav class="nav"><a href="/">Home</a><a href="#desk">Calculator</a><a href="#process">Workflow</a><a href="/workspace">My packs</a><a href="#pilot" class="cta">For teams</a></nav></div></header>
 <main class="shell">
 <section class="hero">
 <div class="heroMain"><div class="eyebrow">Field-to-office revenue control · Vancouver trades</div><h1>Price extra work. Send a clean change order.</h1><p>Capture the change while it is fresh. Calculate the sell price from real costs and target gross margin. Give the office a clean, evidence-backed handoff instead of another missing-ticket chase.</p><div class="chips"><span class="chip">Mobile field capture</span><span class="chip">Transparent CAD pricing</span><span class="chip">PDF-ready pack</span><span class="chip">No ERP replacement</span></div></div>
 <aside class="heroSide"><div><h2>The money leak is the handoff.</h2><p class="muted">The crew does extra work. The office has to reconstruct the story, price it and get approval. This desk makes the handoff explicit.</p></div><div><div class="stats"><div class="stat"><strong>97%</strong><span>Reported paper T&amp;M tickets</span></div><div class="stat"><strong>36%</strong><span>Tickets may not reach the office</span></div></div><p class="muted">US specialty-contractor survey (2025); not a Vancouver market estimate. <a href="https://www.clearstory.build/construction-blog/2025-specialty-contractor-change-order-report" target="_blank" rel="noopener">Source</a></p></div></aside>
 </section>
 <div class="head" id="desk"><div><h2>Build a change-order pack</h2><div class="muted">Cost-based pricing with a gross-margin guardrail. CAD before applicable taxes.</div></div><span class="pill">Founding contractor pilot</span></div>
+<div class="flowProgress" aria-label="Four-step change order workflow">
+<button type="button" class="flowTab active" data-flow="0"><span>01</span><b>Job &amp; scope</b><small>What changed</small></button>
+<button type="button" class="flowTab" data-flow="1"><span>02</span><b>Price</b><small>Protect margin</small></button>
+<button type="button" class="flowTab" data-flow="2"><span>03</span><b>Evidence</b><small>Site photos</small></button>
+<button type="button" class="flowTab" data-flow="3"><span>04</span><b>Send</b><small>Review &amp; handoff</small></button>
+</div>
 <section class="layout">
 <section class="panel"><div class="panelTop"><div><h3>01 / Job and scope</h3><p>Capture context before the crew leaves the site.</p></div><span class="tag">FIELD CAPTURE</span></div><div class="body">
 <form id="changeForm">
-<div class="grid">
-<div class="field"><label for="project">Project / job</label><input id="project" maxlength="120" value="Sample — West 12th mechanical room"></div>
+<section class="wizardStep active" data-stage="0"><div class="grid">
+<div class="field"><label for="project">Project / job</label><input id="project" maxlength="120" required placeholder="e.g. West 12th mechanical room"></div>
 <div class="field"><label for="jobNumber">Job / PO number</label><input id="jobNumber" maxlength="60" placeholder="JOB-2481"></div>
 <div class="field"><label for="customer">GC / owner / customer</label><input id="customer" maxlength="120" placeholder="Company or contact"></div>
+<div class="field"><label for="customerEmail">Customer email (optional)</label><input id="customerEmail" type="email" maxlength="254" placeholder="reviewer@contractor.ca"></div>
+<div class="field"><label for="tradeSelect">Your trade</label><select id="tradeSelect"><option>HVAC / Mechanical</option><option>Plumbing</option><option>Electrical</option><option>General contractor</option><option>Other specialty trade</option></select></div>
 <div class="field"><label for="requestedBy">Who requested it?</label><input id="requestedBy" maxlength="120" placeholder="Name and role"></div>
 <div class="field"><label for="changeType">Reason for change</label><select id="changeType"><option>Owner / GC requested change</option><option>Unforeseen site condition</option><option>Drawing / specification revision</option><option>Code / inspection requirement</option><option>Coordination / clash</option><option>Other</option></select></div>
 <div class="field"><label for="workDate">Date observed</label><input id="workDate" type="date"></div>
 <div class="field full"><label for="scope">What changed? Location, original scope, extra work and assumptions.</label><textarea id="scope" maxlength="1800" placeholder="Describe exactly what changed and why it is outside the original scope."></textarea></div>
 <div class="field"><label for="scheduleDays">Schedule impact (working days)</label><input id="scheduleDays" type="number" min="0" max="365" value="0"></div>
 <div class="field"><label for="statusSelect">Work status</label><select id="statusSelect"><option>Draft — not submitted</option><option>Ready for office review</option><option>Submitted to GC / owner</option><option>Approved in writing</option><option>Work completed</option><option>Ready to invoice</option></select></div>
-</div>
-<div class="sub">02 / True cost inputs</div>
+</div></section>
+<section class="wizardStep" data-stage="1"><div class="sub">02 / True cost inputs</div>
 <div class="grid three">
 <div class="field"><label for="labourHours">Labour hours</label><input id="labourHours" data-price type="number" min="0" step=".25" value="16"></div>
 <div class="field"><label for="labourRate">Loaded labour cost / hr</label><div class="money"><input id="labourRate" data-price type="number" min="0" step=".01" value="58"></div></div>
@@ -52,8 +94,8 @@
 <div class="field"><label for="contingencyPct">Contingency (%)</label><input id="contingencyPct" data-price type="number" min="0" max="100" step=".5" value="5"></div>
 <div class="field"><label for="targetMarginPct">Target gross margin (%)</label><input id="targetMarginPct" data-price type="number" min="0" max="75" step=".5" value="30"></div>
 <div class="field full"><label for="maxPrice">Maximum budget / price cap (optional)</label><div class="money"><input id="maxPrice" data-price type="number" min="0" step=".01" placeholder="Leave blank if none"></div></div>
-</div>
-<div class="sub">03 / Evidence captured</div>
+</div></section>
+<section class="wizardStep" data-stage="2"><div class="sub">03 / Evidence captured</div>
 <div class="checks">
 <label class="check"><input type="checkbox" id="evPhotos"> Site photos / video</label>
 <label class="check"><input type="checkbox" id="evDirection"> Written direction</label>
@@ -62,10 +104,13 @@
 <label class="check"><input type="checkbox" id="evBeforeAfter"> Before / after condition</label>
 <label class="check"><input type="checkbox" id="evSchedule"> Schedule impact communicated</label>
 </div>
-<div class="field full" style="margin-top:12px"><label for="notes">Office handoff notes / exclusions</label><textarea id="notes" maxlength="1000" placeholder="Assumptions, access limits, exclusions and approvals needed."></textarea></div>
+<div class="photoPanel"><div class="photoTitle"><div><b>Site evidence photos</b><p>Capture conditions and receipts from your phone. Max 8 JPG/PNG/WebP photos, 3 MB each.</p></div><span class="tag">PRIVATE FILES</span></div><label class="uploadLabel" for="sitePhotos">+ Add photos from camera or device</label><input id="sitePhotos" type="file" accept="image/jpeg,image/png,image/webp" multiple><div id="photoInfo" class="muted" role="status">Photos are securely stored with the change pack after creation.</div><div id="photoPreview" class="photoPreview"></div></div>
+<div class="field full" style="margin-top:12px"><label for="notes">Office handoff notes / exclusions</label><textarea id="notes" maxlength="1000" placeholder="Assumptions, access limits, exclusions and approvals needed."></textarea></div></section>
+<section class="wizardStep" data-stage="3"><div class="reviewPanel"><span class="tag">FINAL REVIEW</span><h3>Ready to create the change pack?</h3><p>Check the scope, price and evidence. Your private pack link stays saved in this browser. Customer approval activates only after payment confirmation.</p><div id="reviewSummary" aria-live="polite"></div></div>
 <div class="btns"><button type="button" class="btn teal" id="publishBtn">Create approval-ready pack</button><button type="button" class="btn primary" id="printBtn">Print / Save PDF — Free</button><button type="button" class="btn" id="saveBtn">Save draft</button><button type="button" class="btn" id="copyBtn">Copy summary</button><button type="button" class="btn" id="resetBtn">New change</button></div><div id="publishStatus" class="notice" role="status">Free calculator and print-ready PDF. Paid approval links activate only after a verified Stripe payment. No account required.</div>
 <p class="muted">Drafts remain in your browser. When you create a shareable pack, the project, scope and quote are securely saved to the BuildWorkflow server. See <a href="/privacy">privacy</a> and <a href="/terms">terms</a>.</p>
-<div class="notice">Customer approval is a recorded written decision, not a guaranteed legally binding signature. Verify contract terms and taxes before work begins.</div>
+<div class="notice">Customer approval is a recorded written decision, not a guaranteed legally binding signature. Verify contract terms and taxes before work begins.</div></section>
+<div class="wizardActions"><button type="button" class="btn" id="stepBack" hidden>← Back</button><div class="wizardHint" id="stepHint">Step 1 of 4 · Capture the change.</div><button type="button" class="btn teal" id="stepNext">Next: price this change →</button></div>
 </form></div></section>
 <aside class="panel result"><div class="panelTop"><div><h3>04 / Margin guard</h3><p>Live price calculation · before applicable taxes</p></div><span class="tag">PRICE ENGINE</span></div>
 <div class="resultMain"><div class="resultLabel">Recommended sell price</div><div class="price" id="recommendedPrice">—</div><div class="muted">CAD · calculated from loaded cost and target gross margin</div><span class="status" id="priceStatus">Calculating…</span><div class="metrics"><div class="metric"><strong id="loadedCost">—</strong><span>Loaded cost</span></div><div class="metric"><strong id="grossProfit">—</strong><span>Gross profit</span></div><div class="metric"><strong id="achievedMargin">—</strong><span>Gross margin</span></div><div class="metric"><strong id="budgetGap">—</strong><span>Gap to cap</span></div></div></div>
@@ -93,19 +138,20 @@
 </main><section id="printPack"></section>
 <script>
 (function(){
-const ids=["project","jobNumber","customer","requestedBy","changeType","workDate","scope","scheduleDays","statusSelect","labourHours","labourRate","materials","equipment","subcontractors","travel","overheadPct","contingencyPct","targetMarginPct","maxPrice","notes","evPhotos","evDirection","evTime","evReceipts","evBeforeAfter","evSchedule"];
+const ids=["project","jobNumber","customer","customerEmail","tradeSelect","requestedBy","changeType","workDate","scope","scheduleDays","statusSelect","labourHours","labourRate","materials","equipment","subcontractors","travel","overheadPct","contingencyPct","targetMarginPct","maxPrice","notes","evPhotos","evDirection","evTime","evReceipts","evBeforeAfter","evSchedule"];
 const el=id=>document.getElementById(id), val=id=>el(id).value.trim(), n=id=>val(id)===""?"":Number(val(id));
 const money=x=>new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(Number(x||0));
 const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let current=null;
+let current=null, recalcSeq=0;
 function payload(){return {labourHours:n("labourHours"),labourRate:n("labourRate"),materials:n("materials"),equipment:n("equipment"),subcontractors:n("subcontractors"),travel:n("travel"),overheadPct:n("overheadPct"),contingencyPct:n("contingencyPct"),targetMarginPct:n("targetMarginPct"),maxPrice:n("maxPrice")};}
 async function recalc(){
-try{const r=await fetch("/api/price",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload())});const d=await r.json();if(!r.ok)throw new Error(d.error||"Invalid input.");current=d;
+const seq=++recalcSeq;
+try{const r=await fetch("/api/price",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload())});const d=await r.json();if(!r.ok)throw new Error(d.error||"Invalid input.");if(seq!==recalcSeq)return;current=d;
 el("recommendedPrice").textContent=money(d.recommendedPrice);el("loadedCost").textContent=money(d.loadedCost);el("grossProfit").textContent=money(d.grossProfit);el("achievedMargin").textContent=d.achievedMarginPct.toFixed(1)+"%";el("budgetGap").textContent=d.budgetGap===null?"—":money(d.budgetGap);
 el("lineLabour").textContent=money(d.labourCost);el("lineOther").textContent=money(d.directCost-d.labourCost);el("lineOverhead").textContent=money(d.overhead);el("lineContingency").textContent=money(d.contingency);el("lineCost").textContent=money(d.loadedCost);el("lineTarget").textContent=d.targetMarginPct.toFixed(1)+"%";el("linePrice").textContent=money(d.recommendedPrice);
 el("priceStatus").textContent=d.status;el("priceStatus").className="status"+(d.targetAchievable?"":" warn");
 el("guard").className="guard"+(d.targetAchievable?"":" warn");el("guard").innerHTML=d.targetAchievable?"<b>Target margin is achievable</b>Estimated gross margin is "+d.achievedMarginPct.toFixed(1)+"% at the recommended price.":"<b>TARGET MARGIN NOT ACHIEVABLE</b>At the entered cap, estimated margin is "+(d.achievedMarginAtCapPct===null?"not available":d.achievedMarginAtCapPct.toFixed(1)+"%")+". Increase cap, reduce cost/scope, or approve a lower margin deliberately.";
-}catch(e){el("priceStatus").textContent="CHECK INPUTS";el("priceStatus").className="status warn";el("guard").className="guard warn";el("guard").textContent=e.message;}
+}catch(e){if(seq!==recalcSeq)return;current=null;el("priceStatus").textContent="CHECK INPUTS";el("priceStatus").className="status warn";el("guard").className="guard warn";el("guard").textContent=e.message;}
 }
 function evidence(){return [["Site photos / video",el("evPhotos").checked],["Written direction",el("evDirection").checked],["Crew time record",el("evTime").checked],["Material receipts / quote",el("evReceipts").checked],["Before / after condition",el("evBeforeAfter").checked],["Schedule impact",el("evSchedule").checked]];}
 function packText(){
@@ -131,8 +177,8 @@ el("pilotForm").addEventListener("submit",async event=>{event.preventDefault();c
 el("publishBtn").addEventListener("click",async()=>{
   const btn=el("publishBtn"),msg=el("publishStatus");
   if(!current){msg.textContent="Enter valid costs first.";return;}
-  const data={project:val("project"),jobNumber:val("jobNumber"),customer:val("customer"),requestedBy:val("requestedBy"),
-    trade:"Specialty trade",changeType:val("changeType"),workDate:val("workDate"),scope:val("scope"),
+  const data={project:val("project"),jobNumber:val("jobNumber"),customer:val("customer"),customerEmail:val("customerEmail"),requestedBy:val("requestedBy"),
+    trade:val("tradeSelect"),changeType:val("changeType"),workDate:val("workDate"),scope:val("scope"),
     scheduleDays:val("scheduleDays"),notes:val("notes"),pricing:payload(),
     evidence:evidence().filter(x=>x[1]).map(x=>x[0])};
   btn.disabled=true;btn.textContent="Creating pack…";msg.textContent="Saving your priced change order.";
@@ -140,12 +186,65 @@ el("publishBtn").addEventListener("click",async()=>{
     const res=await fetch("/api/orders",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(data)});
     const out=await res.json();
     if(!res.ok)throw Error(out.error||"Could not create a pack.");
-    localStorage.setItem("fieldchange-order-"+out.id,JSON.stringify({manageUrl:out.manageUrl,approvalUrl:out.approvalUrl}));
+    localStorage.setItem("fieldchange-order-"+out.id,JSON.stringify({manageUrl:out.manageUrl,createdAt:new Date().toISOString(),project:data.project,customer:data.customer}));
     saveDraft();
+    window.lastCreatedManageUrl=out.manageUrl;
+    const photos=Array.from(el("sitePhotos").files||[]),manageToken=new URL(out.manageUrl).searchParams.get("token");
+    for(let i=0;i<photos.length;i++){
+      msg.textContent="Uploading site photo "+(i+1)+" / "+photos.length+"…";
+      const form=new FormData();form.set("photo",photos[i]);
+      const upload=await fetch("/api/orders/"+out.id+"/attachments?token="+encodeURIComponent(manageToken),{method:"POST",body:form});
+      const info=await upload.json();
+      if(!upload.ok)throw new Error(info.error||"Photo upload failed.");
+    }
     window.location.href=out.manageUrl;
-  }catch(e){msg.textContent=e.message||"Could not create a pack.";}
+  }catch(e){msg.textContent=e.message||"Could not create a pack.";if(window.lastCreatedManageUrl){const link=document.createElement("a");link.href=window.lastCreatedManageUrl;link.textContent="Open saved pack";msg.append(" ",link);}}
   finally{btn.disabled=false;btn.textContent="Create approval-ready pack";}
 });
-restore();if(!val("workDate"))el("workDate").value=new Date().toISOString().slice(0,10);recalc();
+
+/* Guided mobile field-to-office experience built on the existing pricing/approval engine. */
+let stage=0,previewUrls=[];
+const titles=["Job & scope","True-cost pricing","Evidence & exclusions","Review & send"];
+function review(){
+ const x=el("reviewSummary");x.replaceChildren();
+ const add=(name,value)=>{const row=document.createElement("div");row.className="reviewLine";const a=document.createElement("span"),b=document.createElement("strong");a.textContent=name;b.textContent=value||"—";row.append(a,b);x.append(row);};
+ add("Project",val("project"));add("Customer",val("customer"));add("Scope",val("scope").slice(0,200));
+ add("Recommended sell price",current?money(current.recommendedPrice):"Incomplete");
+ add("Site photos",String(el("sitePhotos").files?.length||0));add("Schedule",val("scheduleDays")+" working days");
+}
+function gotoStage(next){
+ stage=Math.max(0,Math.min(3,next));
+ document.querySelectorAll(".wizardStep").forEach(x=>x.classList.toggle("active",Number(x.dataset.stage)===stage));
+ document.querySelectorAll(".flowTab").forEach(x=>{const active=Number(x.dataset.flow)===stage;x.classList.toggle("active",active);x.setAttribute("aria-current",active?"step":"false");});
+ el("stepBack").hidden=stage===0;el("stepNext").hidden=stage===3;
+ el("stepNext").textContent=stage===0?"Next: price this change →":stage===1?"Next: attach evidence →":"Next: review & send →";
+ el("stepHint").textContent="Step "+(stage+1)+" of 4 · "+titles[stage];
+ if(stage===3)review();
+ document.getElementById("desk").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function validateStage(){
+ if(stage===0){
+   if(val("project").length<2){el("project").focus();alert("Enter the project or job name.");return false;}
+   if(val("scope").length<15){el("scope").focus();alert("Describe the extra work in at least 15 characters.");return false;}
+   if(val("customerEmail")&&!el("customerEmail").checkValidity()){el("customerEmail").reportValidity();return false;}
+ }
+ if(stage===1&&(!current||current.recommendedPrice<=0||!current.targetAchievable)){alert("Enter valid costs and resolve any margin guard warning.");return false;}
+ if(stage===2){const files=Array.from(el("sitePhotos").files||[]);
+   if(files.length>8||files.some(x=>x.size>3000000||!["image/png","image/jpeg","image/webp"].includes(x.type))){alert("Choose up to eight JPG/PNG/WebP photos, each under 3 MB.");return false;}
+ }
+ return true;
+}
+el("stepBack").onclick=()=>gotoStage(stage-1);
+el("stepNext").onclick=()=>{if(validateStage())gotoStage(stage+1);};
+document.querySelectorAll("[data-flow]").forEach(btn=>btn.addEventListener("click",()=>{const target=Number(btn.dataset.flow);if(target<=stage||validateStage())gotoStage(target);}));
+el("sitePhotos").addEventListener("change",()=>{
+ previewUrls.forEach(URL.revokeObjectURL);previewUrls=[];
+ const files=Array.from(el("sitePhotos").files||[]),view=el("photoPreview");view.replaceChildren();
+ el("photoInfo").textContent=files.length+" selected photo"+(files.length===1?"":"s")+" · uploaded when the pack is created.";
+ for(const file of files.slice(0,8)){if(!file.type.startsWith("image/"))continue;const url=URL.createObjectURL(file);previewUrls.push(url);const img=document.createElement("img");img.src=url;img.alt=file.name;img.loading="lazy";view.append(img);}
+});
+el("changeForm").addEventListener("input",()=>{try{saveDraft();}catch{}});
+
+restore();if(!val("workDate"))el("workDate").value=new Date().toISOString().slice(0,10);recalc();gotoStage(0);
 })();
 </script></body></html>
